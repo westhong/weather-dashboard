@@ -162,23 +162,35 @@ html, body {
 #debug-panel .ok{color:#43c98c;font-weight:600;}
 #debug-panel .err{color:#ff6b6b;font-weight:600;}
 #debug-panel .inf{color:#a0c4f8;}
-/* ── DEV MODE PAGE ── */
-#dev-mode-page{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9998;background:#0d1117;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(env(safe-area-inset-top,0px) + 52px);}
-#dev-mode-page.active{display:block;}
-.dev-header{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 8px) 16px 10px;background:#1a0000;border-bottom:2px solid #cc0000;}
-.dev-back-btn{background:none;border:1px solid rgba(255,255,255,0.3);color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;cursor:pointer;}
-.dev-title{flex:1;text-align:center;color:#fff;font-weight:700;font-size:15px;}
-.dev-badge{background:#cc0000;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;}
-.dev-section{margin:16px 16px 0;background:#161b22;border-radius:12px;overflow:hidden;}
-.dev-section-title{padding:12px 16px;font-weight:700;color:#cc4444;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.08);}
-.dev-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.05);}
+/* ── DEV MODE PAGE (V3 Bottom Sheet) ── */
+/* Body state when dev mode active */
+body.dev-mode-active .ver-badge{background:rgba(204,0,0,0.2)!important;color:#ff6b6b!important;border-color:rgba(204,0,0,0.4)!important;}
+body.dev-mode-active #push-bell-btn{background:rgba(204,0,0,0.15);border-color:rgba(204,0,0,0.4);color:#ff6b6b;}
+body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
+/* Dev tools bottom sheet */
+#dev-panel-backdrop{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.55);-webkit-tap-highlight-color:transparent;}
+#dev-panel-backdrop.open{display:block;}
+#dev-tools-panel{display:none;position:fixed;bottom:0;left:0;right:0;z-index:10001;background:#0d1117;border-radius:20px 20px 0 0;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:max(env(safe-area-inset-bottom,0px),12px);box-shadow:0 -6px 40px rgba(0,0,0,0.7);transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0,1);}
+#dev-tools-panel.open{display:block;transform:translateY(0);}
+.dev-sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:12px auto 0;}
+.dev-sheet-header{display:flex;align-items:center;padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.dev-sheet-title{flex:1;color:#fff;font-weight:700;font-size:15px;}
+.dev-sheet-close{background:rgba(255,255,255,0.1);border:none;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;cursor:pointer;}
+.dev-section{margin:12px 14px 0;background:#161b22;border-radius:12px;overflow:hidden;}
+.dev-section-title{padding:10px 14px;font-weight:700;color:#cc4444;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.08);letter-spacing:0.5px;text-transform:uppercase;}
+.dev-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,0.05);}
 .dev-row:last-child{border-bottom:none;}
-.dev-row-label{color:#8b949e;font-size:13px;}
-.dev-row-value{color:#e6edf3;font-size:13px;font-weight:600;}
-.dev-btn{display:block;width:calc(100% - 32px);margin:12px 16px;padding:12px;background:#cc0000;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;text-align:center;}
-.dev-btn:active{opacity:0.8;}
+.dev-row-label{color:#8b949e;font-size:12px;}
+.dev-row-value{color:#e6edf3;font-size:12px;font-weight:600;}
+.dev-btn{display:block;width:calc(100% - 28px);margin:10px 14px;padding:11px;background:#cc0000;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;text-align:center;}
+.dev-btn:active{opacity:0.75;}
 .dev-btn.secondary{background:#1f2937;border:1px solid rgba(255,255,255,0.15);}
-.dev-log-box{margin:16px;background:#0a0e13;border:1px solid #21262d;border-radius:10px;padding:12px;max-height:200px;overflow-y:auto;font-family:'SF Mono',monospace;font-size:11px;color:#79c0ff;line-height:1.7;}
+.dev-result{display:none;margin:0 14px 10px;padding:8px 10px;background:#0a0e13;border:1px solid #21262d;border-radius:8px;font-family:'SF Mono',monospace;font-size:11px;color:#79c0ff;line-height:1.7;white-space:pre-wrap;}
+.dev-result.show{display:block;}
+.dev-result.err{color:#ff6b6b;border-color:rgba(255,107,107,0.3);}
+.dev-log-box{margin:8px 14px 0;background:#0a0e13;border:1px solid #21262d;border-radius:8px;padding:10px;max-height:160px;overflow-y:auto;font-family:'SF Mono',monospace;font-size:11px;color:#79c0ff;line-height:1.7;}
+/* hide old full-page overlay */
+#dev-mode-page{display:none!important;}
 
 #dbg-title{color:#a0c4f8;font-weight:700;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.1);}
 #dbg-title:active{opacity:0.6;}
@@ -713,7 +725,7 @@ html, body {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.3</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts0">—</div>
     </div>
@@ -869,7 +881,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v2.1.3 · dashboard.westech.com.hk<br>
+      v2.1.4 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skinakiska.com · onthesnow.com
     </div>
 
@@ -894,7 +906,7 @@ html, body {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.3</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts1">—</div>
     </div>
@@ -1050,7 +1062,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v2.1.3 · dashboard.westech.com.hk<br>
+      v2.1.4 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skibanff.com · skiresort.info
     </div>
 
@@ -1075,7 +1087,7 @@ html, body {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.3</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts2">—</div>
     </div>
@@ -1231,7 +1243,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v2.1.3 · dashboard.westech.com.hk<br>
+      v2.1.4 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skilouise.com · onthesnow.com
     </div>
 
@@ -1256,7 +1268,7 @@ html, body {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.3</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts3">—</div>
     </div>
@@ -1410,7 +1422,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v2.1.3 · dashboard.westech.com.hk<br>
+      v2.1.4 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：banffnorquay.com · onthesnow.com
     </div>
 
@@ -1435,7 +1447,7 @@ html, body {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.3</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts4">—</div>
     </div>
@@ -1559,7 +1571,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v2.1.3 · dashboard.westech.com.hk<br>
+      v2.1.4 · dashboard.westech.com.hk<br>
       資料來源：Open-Meteo (ECMWF/GFS) · MET Norway Yr.no · 每 15 分鐘自動更新
     </div>
 
@@ -2259,7 +2271,7 @@ window.addEventListener('focus', ()=>{
 });
 
 // ══════════════════════════════════════════════════════════
-//  PWA + Push Notification  (v2.1.3)
+//  PWA + Push Notification  (v2.1.4)
 // ══════════════════════════════════════════════════════════
 const PUSH_WORKER_URL = '';
 let VAPID_PUBLIC_KEY = '';
@@ -2425,39 +2437,80 @@ function devLog(msg) {
   log.scrollTop = log.scrollHeight;
 }
 
+
+
+// ── SVG constants ────────────────────────────────────
+const BELL_SVG = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const SCREWDRIVER_SVG = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
 function enterDevMode() {
-  document.getElementById('dev-mode-page').classList.add('active');
-  // Turn beta-banner red with dev mode indicator
+  document.body.classList.add('dev-mode-active');
+  // Banner → red
   const banner = document.getElementById('beta-banner');
   if (banner && !banner.dataset.origHtml) {
     banner.dataset.origHtml = banner.innerHTML;
-    banner.dataset.origBg = banner.getAttribute('style') || '';
+    banner.dataset.origStyle = banner.getAttribute('style') || '';
   }
   if (banner) {
     banner.style.background = '#cc0000';
     banner.style.color = '#ffffff';
-    // Keep banner text minimal, red indicator
-    const closeBtn = banner.querySelector('button');
-    const closeBtnHtml = closeBtn ? closeBtn.outerHTML.replace('color:#1a1a1a','color:#fff') : '';
-    banner.innerHTML = '🛠 開發者模式 &nbsp;·&nbsp; <strong>V3 Developer</strong>' + closeBtnHtml;
+    banner.innerHTML = '🛠 開發者模式 &nbsp;·&nbsp; <strong style="letter-spacing:0.5px">V3</strong>'
+      + '<button onclick="exitDevMode()" style="position:absolute;right:10px;bottom:8px;'
+      + 'background:none;border:none;font-size:1.2em;cursor:pointer;color:#fff;line-height:1;">✕</button>';
   }
+  // ver-badge → "V3"
+  document.querySelectorAll('.ver-badge').forEach(b => {
+    if (!b.dataset.origText) b.dataset.origText = b.textContent;
+    b.textContent = 'V3';
+    b.onclick = null;
+  });
+  // Bell → screwdriver
+  document.querySelectorAll('#push-bell-btn').forEach(btn => {
+    btn.innerHTML = SCREWDRIVER_SVG;
+    btn.title = '開發者工具';
+    btn.onclick = openDevPanel;
+  });
   // Close debug panel
   document.getElementById('debug-panel').classList.remove('on');
-  devLoadStats();
-  devCheckSW();
   devLog('Dev mode entered');
 }
 
 function exitDevMode() {
-  document.getElementById('dev-mode-page').classList.remove('active');
-  // Restore beta-banner
+  document.body.classList.remove('dev-mode-active');
+  closeDevPanel();
+  // Restore banner
   const banner = document.getElementById('beta-banner');
   if (banner && banner.dataset.origHtml) {
-    banner.setAttribute('style', banner.dataset.origBg);
+    banner.setAttribute('style', banner.dataset.origStyle || '');
     banner.innerHTML = banner.dataset.origHtml;
     delete banner.dataset.origHtml;
-    delete banner.dataset.origBg;
+    delete banner.dataset.origStyle;
   }
+  // Restore ver-badge
+  document.querySelectorAll('.ver-badge').forEach(b => {
+    if (b.dataset.origText) b.textContent = b.dataset.origText;
+    b.onclick = () => document.getElementById('debug-panel').classList.toggle('on');
+  });
+  // Restore bell
+  document.querySelectorAll('#push-bell-btn').forEach(btn => {
+    btn.innerHTML = BELL_SVG;
+    btn.title = '新雪通知';
+    btn.onclick = togglePushSubscription;
+  });
+}
+
+function openDevPanel() {
+  devLoadStats();
+  devCheckSW();
+  document.getElementById('dev-tools-panel').classList.add('open');
+  document.getElementById('dev-panel-backdrop').classList.add('open');
+}
+
+function closeDevPanel() {
+  const p = document.getElementById('dev-tools-panel');
+  const b = document.getElementById('dev-panel-backdrop');
+  if (p) p.classList.remove('open');
+  if (b) b.classList.remove('open');
 }
 
 async function devLoadStats() {
@@ -2558,12 +2611,13 @@ async function devRefreshData() {
 })();
 
 </script>
-<!-- ── DEV MODE PAGE (V3) ── -->
-<div id="dev-mode-page">
-  <div class="dev-header">
-    <button class="dev-back-btn" onclick="exitDevMode()">← 返回</button>
-    <div class="dev-title">🛠 開發者模式</div>
-    <div class="dev-badge">V3</div>
+<!-- ── DEV TOOLS PANEL (V3 Bottom Sheet) ── -->
+<div id="dev-panel-backdrop" onclick="closeDevPanel()"></div>
+<div id="dev-tools-panel">
+  <div class="dev-sheet-handle"></div>
+  <div class="dev-sheet-header">
+    <div class="dev-sheet-title">🛠 開發者工具</div>
+    <button class="dev-sheet-close" onclick="closeDevPanel()">✕ 關閉</button>
   </div>
 
   <!-- Push Notification -->
@@ -2571,7 +2625,7 @@ async function devRefreshData() {
     <div class="dev-section-title">📲 推送通知</div>
     <div class="dev-row">
       <span class="dev-row-label">訂閱狀態</span>
-      <span class="dev-row-value" id="dev-sub-status">檢查中…</span>
+      <span class="dev-row-value" id="dev-sub-status">—</span>
     </div>
     <div class="dev-row">
       <span class="dev-row-label">訂閱人數</span>
@@ -2581,7 +2635,7 @@ async function devRefreshData() {
       <span class="dev-row-label">最後檢查</span>
       <span class="dev-row-value" id="dev-last-check">—</span>
     </div>
-    <button class="dev-btn primary" onclick="devTestPush()">🔔 發送測試推送</button>
+    <button class="dev-btn" onclick="devTestPush()">🔔 發送測試推送</button>
     <div id="dev-push-result" class="dev-result"></div>
   </div>
 
@@ -2590,7 +2644,7 @@ async function devRefreshData() {
     <div class="dev-section-title">⚙️ 系統資訊</div>
     <div class="dev-row">
       <span class="dev-row-label">版本</span>
-      <span class="dev-row-value">v2.1.3 / V3 Dev</span>
+      <span class="dev-row-value">v2.1.4 / V3</span>
     </div>
     <div class="dev-row">
       <span class="dev-row-label">VAPID Key (前8碼)</span>
@@ -2601,25 +2655,24 @@ async function devRefreshData() {
       <span class="dev-row-value" id="dev-sw-status">—</span>
     </div>
     <div class="dev-row">
-      <span class="dev-row-label">Worker URL</span>
-      <span class="dev-row-value" style="font-size:0.72em">dashboard.westech.com.hk</span>
+      <span class="dev-row-label">Worker</span>
+      <span class="dev-row-value" style="font-size:0.7em">dashboard.westech.com.hk</span>
     </div>
-    <button class="dev-btn" onclick="devCheckSW()">🔄 檢查 Service Worker</button>
+    <button class="dev-btn secondary" onclick="devCheckSW()">🔄 檢查 Service Worker</button>
     <div id="dev-sw-result" class="dev-result"></div>
   </div>
 
   <!-- Data -->
   <div class="dev-section">
     <div class="dev-section-title">📊 天氣資料</div>
-    <button class="dev-btn" onclick="devRefreshData()">🌨 強制重新載入天氣</button>
+    <button class="dev-btn secondary" onclick="devRefreshData()">🌨 強制重新載入天氣</button>
     <div id="dev-data-result" class="dev-result"></div>
   </div>
 
-  <!-- Debug Log -->
-  <div class="dev-section">
-    <div class="dev-section-title">📋 Debug</div>
-    <div id="dev-log" style="font-size:0.78em;font-family:monospace;color:rgba(255,255,255,0.5);max-height:150px;overflow-y:auto;line-height:1.6;"></div>
-    <button class="dev-btn" onclick="document.getElementById('dev-log').innerHTML=''">清除 Log</button>
+  <!-- Debug Log (view only, no clear button) -->
+  <div class="dev-section" style="margin-bottom:16px;">
+    <div class="dev-section-title">📋 Debug Log</div>
+    <div id="dev-log" class="dev-log-box"></div>
   </div>
 </div>
 
