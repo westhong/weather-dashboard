@@ -488,7 +488,7 @@ html, body {
       <div class="sub">Alberta · 1,045 m · 51.04°N 114.07°W</div>
     </div>
     <div class="hdr-right">
-      <div class="ver-badge">v1.0.5</div>
+      <div class="ver-badge">v1.0.6</div>
       <div class="ts" id="ts0">—</div>
     </div>
   </div>
@@ -640,7 +640,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v1.0.5 · dashboard.westech.com.hk<br>
+      v1.0.6 · dashboard.westech.com.hk<br>
       資料來源：Open-Meteo (ECMWF/GFS) · MET Norway Yr.no · 每 15 分鐘自動更新
     </div>
 
@@ -659,7 +659,7 @@ html, body {
       <div class="sub">Kananaskis Country · 2,258 m · 50.94°N 115.15°W</div>
     </div>
     <div class="hdr-right">
-      <div class="ver-badge">v1.0.5</div>
+      <div class="ver-badge">v1.0.6</div>
       <div class="ts" id="ts1">—</div>
     </div>
   </div>
@@ -856,7 +856,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v1.0.5 · dashboard.westech.com.hk<br>
+      v1.0.6 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skinakiska.com · onthesnow.com
     </div>
 
@@ -875,7 +875,7 @@ html, body {
       <div class="sub">Banff National Park · 2,730 m · 51.08°N 115.76°W</div>
     </div>
     <div class="hdr-right">
-      <div class="ver-badge">v1.0.5</div>
+      <div class="ver-badge">v1.0.6</div>
       <div class="ts" id="ts2">—</div>
     </div>
   </div>
@@ -1072,7 +1072,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v1.0.5 · dashboard.westech.com.hk<br>
+      v1.0.6 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skibanff.com · skiresort.info
     </div>
 
@@ -1431,6 +1431,28 @@ function render(loc, om, met){
   document.getElementById(`ts${loc.id}`).textContent=`更新 ${ts}`;
 }
 
+/* ─── DEBUG PANEL ─────────────────────────── */
+function dbg(type, msg){
+  const panel = document.getElementById('dbg-log');
+  if(!panel) return;
+  const line = document.createElement('div');
+  line.className = type; // 'ok','err','inf'
+  const time = new Date().toLocaleTimeString('zh-Hant',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  line.textContent = '['+time+'] '+msg;
+  panel.prepend(line);
+  // keep max 30 lines
+  while(panel.children.length > 30) panel.removeChild(panel.lastChild);
+}
+
+// Global error handler
+window.onerror = function(msg, src, line, col, err){
+  dbg('err','JS ERR: '+msg+' ('+line+':'+col+')');
+  return false;
+};
+window.addEventListener('unhandledrejection', function(e){
+  dbg('err','UNHANDLED: '+(e.reason?.message||String(e.reason)));
+});
+
 /* ─── FETCH ──────────────────────────────── */
 /* ─── FETCH WITH TIMEOUT + RETRY ─────────── */
 async function fetchWithTimeout(url, opts={}, timeoutMs=12000){
@@ -1476,8 +1498,8 @@ async function fetchMET(lat,lon,alt){
 }
 
 async function loadLoc(loc){
-  dbg('inf','→ '+loc.name);
   try{
+    dbg('inf','→ '+loc.name);
     const [om,met]=await Promise.all([fetchOM(loc.lat,loc.lon), fetchMET(loc.lat,loc.lon,loc.alt)]);
     render(loc,om,met);
   } catch(err){
