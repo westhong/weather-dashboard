@@ -159,6 +159,78 @@ html, body {
 #dbg-close{display:block;width:100%;text-align:center;cursor:pointer;color:#fff;font-weight:700;font-size:16px;background:rgba(255,107,107,0.25);border-radius:10px;padding:8px 0;margin-top:10px;letter-spacing:1px;}
 #dbg-title{color:#fff;font-weight:700;font-size:13px;margin-bottom:8px;border-bottom:1px solid rgba(255,107,107,0.4);padding-bottom:6px;}
 
+
+/* ═══ TOMORROW SMART CARD ═══ */
+.tmr-card {
+  display: none;
+  background: linear-gradient(135deg, rgba(30,80,160,0.55), rgba(80,20,120,0.45));
+  border: 1.5px solid rgba(160,196,248,0.45);
+  border-radius: 18px;
+  padding: 14px 16px 12px;
+  margin: 0 0 14px 0;
+  position: relative;
+  overflow: hidden;
+}
+.tmr-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, #a0c4f8, #c084fc, #a0c4f8);
+}
+.tmr-card.visible { display: block; }
+.tmr-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+  color: #c084fc; text-transform: uppercase; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.tmr-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, rgba(192,132,252,0.4), transparent);
+}
+.tmr-main {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+}
+.tmr-icon { font-size: 42px; line-height: 1; }
+.tmr-temps { flex: 1; }
+.tmr-temp-row { display: flex; align-items: baseline; gap: 6px; }
+.tmr-hi { font-size: 28px; font-weight: 700; color: #ff9a6c; line-height: 1; }
+.tmr-lo { font-size: 20px; font-weight: 600; color: #a0c4f8; }
+.tmr-sep { font-size: 16px; color: var(--muted); }
+.tmr-desc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.tmr-verdict {
+  font-size: 12px; font-weight: 700; padding: 3px 10px;
+  border-radius: 20px; align-self: flex-start;
+  white-space: nowrap;
+}
+.tmr-verdict.good  { background: rgba(67,201,140,0.2); color: #43c98c; border: 1px solid rgba(67,201,140,0.4); }
+.tmr-verdict.ok    { background: rgba(255,200,50,0.15); color: #ffc832; border: 1px solid rgba(255,200,50,0.3); }
+.tmr-verdict.bad   { background: rgba(255,107,107,0.15); color: #ff6b6b; border: 1px solid rgba(255,107,107,0.3); }
+.tmr-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.tmr-cell {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px; padding: 8px 10px;
+}
+.tmr-cell-label {
+  font-size: 10px; color: var(--muted); font-weight: 600;
+  letter-spacing: 0.5px; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 4px;
+}
+.tmr-cell-main {
+  font-size: 13px; font-weight: 700; color: #e8f0ff;
+  margin-bottom: 2px;
+}
+.tmr-cell-sub {
+  font-size: 11px; color: var(--muted);
+}
+.tmr-snow-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(160,196,248,0.15); border-radius: 8px;
+  padding: 2px 7px; font-size: 11px; color: #a0c4f8;
+  font-weight: 700; margin-top: 2px;
+}
+
 /* Version badge top-right */
 .ver-badge {
   display: inline-block;
@@ -492,7 +564,7 @@ html, body {
       <div class="sub">Alberta · 1,045 m · 51.04°N 114.07°W</div>
     </div>
     <div class="hdr-right">
-      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.0</div>
+      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.1</div>
       <div class="ts" id="ts0">—</div>
     </div>
   </div>
@@ -644,7 +716,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v1.1.0 · dashboard.westech.com.hk<br>
+      v1.1.1 · dashboard.westech.com.hk<br>
       資料來源：Open-Meteo (ECMWF/GFS) · MET Norway Yr.no · 每 15 分鐘自動更新
     </div>
 
@@ -663,7 +735,7 @@ html, body {
       <div class="sub">Kananaskis Country · 2,258 m · 50.94°N 115.15°W</div>
     </div>
     <div class="hdr-right">
-      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.0</div>
+      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.1</div>
       <div class="ts" id="ts1">—</div>
     </div>
   </div>
@@ -847,6 +919,7 @@ html, body {
     <!-- HOURLY -->
     <div class="card full">
       <div class="card-label">⏱ 未來 24 小時</div>
+      <div id="c1-tmr" class="tmr-card"></div>
       <div class="hourly-wrap">
         <div class="hourly-row" id="c1-hourly"></div>
         <div class="mini-chart" id="c1-chart"></div>
@@ -860,7 +933,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v1.1.0 · dashboard.westech.com.hk<br>
+      v1.1.1 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skinakiska.com · onthesnow.com
     </div>
 
@@ -879,7 +952,7 @@ html, body {
       <div class="sub">Banff National Park · 2,730 m · 51.08°N 115.76°W</div>
     </div>
     <div class="hdr-right">
-      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.0</div>
+      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.1</div>
       <div class="ts" id="ts2">—</div>
     </div>
   </div>
@@ -1063,6 +1136,7 @@ html, body {
     <!-- HOURLY -->
     <div class="card full">
       <div class="card-label">⏱ 未來 24 小時</div>
+      <div id="c2-tmr" class="tmr-card"></div>
       <div class="hourly-wrap">
         <div class="hourly-row" id="c2-hourly"></div>
         <div class="mini-chart" id="c2-chart"></div>
@@ -1076,7 +1150,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v1.1.0 · dashboard.westech.com.hk<br>
+      v1.1.1 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skibanff.com · skiresort.info
     </div>
 
@@ -1245,6 +1319,122 @@ function drawSunArc(arcId,sunId,riseStr,setStr){
 }
 
 /* ─── HOURLY RENDER ──────────────────────── */
+
+/* ─── TOMORROW SMART CARD (shows after 16:00) ──────── */
+function renderTomorrow(loc, om) {
+  const el = document.getElementById(`${loc.key}-tmr`);
+  if (!el || loc.id === 0) return; // ski pages only
+
+  const now = new Date();
+  const hourNow = now.getHours();
+  // Show after 16:00 local time
+  if (hourNow < 16) { el.classList.remove('visible'); return; }
+  el.classList.add('visible');
+
+  const d = om.daily;
+  const h = om.hourly;
+
+  // Tomorrow is index 1 in daily
+  const tmrHi   = Math.round(d.temperature_2m_max[1]);
+  const tmrLo   = Math.round(d.temperature_2m_min[1]);
+  const tmrCode = d.weathercode[1];
+  const tmrSnow = (d.snowfall_sum[1] || 0);
+  const tmrProb = d.precipitation_probability_max[1] || 0;
+  const tmrUV   = d.uv_index_max[1] || 0;
+
+  // Find hourly indices for tomorrow
+  const tmrDate = d.time[1]; // "2026-03-07"
+  const indices = h.time.reduce((acc, t, i) => {
+    if (t.startsWith(tmrDate)) acc.push(i);
+    return acc;
+  }, []);
+
+  // AM = 06:00–11:00, PM = 12:00–17:00
+  const amIdx = indices.filter(i => {
+    const hr = parseInt(h.time[i].slice(11,13));
+    return hr >= 6 && hr <= 11;
+  });
+  const pmIdx = indices.filter(i => {
+    const hr = parseInt(h.time[i].slice(11,13));
+    return hr >= 12 && hr <= 17;
+  });
+
+  function avgArr(arr, data) {
+    if (!arr.length) return null;
+    const vals = arr.map(i => data[i]).filter(v => v != null);
+    if (!vals.length) return null;
+    return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+  }
+
+  const amTemp  = avgArr(amIdx, h.temperature_2m);
+  const amFeel  = avgArr(amIdx, h.apparent_temperature);
+  const pmTemp  = avgArr(pmIdx, h.temperature_2m);
+  const pmFeel  = avgArr(pmIdx, h.apparent_temperature);
+
+  // Ski verdict logic
+  let verdict, verdictClass;
+  const windMax = Math.max(...indices.map(i => h.windspeed_10m?.[i] ?? h.windgusts_10m?.[i] ?? 0).filter(Boolean));
+  const isBadCode = [95,96,99,71,73,75,77].includes(tmrCode);
+  if (isBadCode || windMax > 60) {
+    verdict = '⚠️ 風大或惡劣天氣'; verdictClass = 'bad';
+  } else if (tmrSnow > 5 && tmrHi >= -15) {
+    verdict = '🎿 粉雪好日子！'; verdictClass = 'good';
+  } else if (tmrHi >= -5 && !isBadCode) {
+    verdict = '✅ 適合滑雪'; verdictClass = 'good';
+  } else if (tmrHi >= -12) {
+    verdict = '🧣 天氣尚可'; verdictClass = 'ok';
+  } else {
+    verdict = '🥶 氣溫極低'; verdictClass = 'bad';
+  }
+
+  const icon = wmoIcon(tmrCode, true);
+  const desc = wmoDesc(tmrCode);
+
+  function tempRow(temp, feel) {
+    if (temp == null) return '—';
+    const feelStr = feel != null ? `體感 ${feel}°` : '';
+    return `${temp}°C <span style="color:var(--muted);font-weight:400;font-size:11px">${feelStr}</span>`;
+  }
+
+  el.innerHTML = `
+    <div class="tmr-label">🌅 明日天氣預報</div>
+    <div class="tmr-main">
+      <div class="tmr-icon">${icon}</div>
+      <div class="tmr-temps">
+        <div class="tmr-temp-row">
+          <span class="tmr-hi">${tmrHi}°</span>
+          <span class="tmr-sep">/</span>
+          <span class="tmr-lo">${tmrLo}°</span>
+        </div>
+        <div class="tmr-desc">${desc}${tmrSnow > 0 ? ` · 新雪 ❄️ ${tmrSnow.toFixed(0)}cm` : ''}</div>
+      </div>
+      <div class="tmr-verdict ${verdictClass}">${verdict}</div>
+    </div>
+    <div class="tmr-grid">
+      <div class="tmr-cell">
+        <div class="tmr-cell-label">🌤 上午 (6–12時)</div>
+        <div class="tmr-cell-main">${amTemp != null ? amTemp + '°C' : '—'}</div>
+        <div class="tmr-cell-sub">${amFeel != null ? '體感 ' + amFeel + '°C' : ''}</div>
+      </div>
+      <div class="tmr-cell">
+        <div class="tmr-cell-label">🌆 下午 (12–18時)</div>
+        <div class="tmr-cell-main">${pmTemp != null ? pmTemp + '°C' : '—'}</div>
+        <div class="tmr-cell-sub">${pmFeel != null ? '體感 ' + pmFeel + '°C' : ''}</div>
+      </div>
+      <div class="tmr-cell">
+        <div class="tmr-cell-label">☁️ 降水概率</div>
+        <div class="tmr-cell-main">${tmrProb}%</div>
+        <div class="tmr-cell-sub">${tmrSnow > 0 ? '❄️ 新雪 ' + tmrSnow.toFixed(0) + ' cm' : '🌧 ' + (d.precipitation_sum?.[1] ?? 0).toFixed(1) + ' mm'}</div>
+      </div>
+      <div class="tmr-cell">
+        <div class="tmr-cell-label">🔆 最高UV</div>
+        <div class="tmr-cell-main">${tmrUV.toFixed(1)}</div>
+        <div class="tmr-cell-sub">${uvInfo(tmrUV).lbl}</div>
+      </div>
+    </div>
+  `;
+}
+
 function renderHourly(key,h,idx){
   const rowEl=document.getElementById(`${key}-hourly`);
   const chartEl=document.getElementById(`${key}-chart`);
@@ -1423,6 +1613,9 @@ function render(loc, om, met){
     const isSnow=[71,73,75,77,85,86].includes(code);
     applyLens(loc.id, omUV, omCloud, loc.alt, isSnow, !isDay, Math.round(avgT), wmoDesc(code));
   }
+
+  // ── TOMORROW CARD
+  renderTomorrow(loc, om);
 
   // ── HOURLY
   renderHourly(k,h,idx);
