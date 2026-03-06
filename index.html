@@ -570,20 +570,21 @@ html, body {
 /* ── Push Notification Bell ──────────────────────────────── */
 #push-bell-btn {
   position: fixed;
-  top: 14px;
-  right: 14px;
+  bottom: 56px;
+  right: 18px;
   z-index: 9999;
-  background: rgba(255,255,255,0.10);
+  background: rgba(8,17,31,0.85);
   border: 1.5px solid rgba(255,255,255,0.22);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: background 0.2s, transform 0.15s;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
 }
 #push-bell-btn:active { transform: scale(0.9); }
 #push-bell-btn.subscribed { background: rgba(91,196,255,0.20); border-color: #5bc4ff; }
@@ -594,7 +595,7 @@ html, body {
 /* Push toast */
 #push-toast {
   position: fixed;
-  bottom: 80px;
+  bottom: 108px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(30,50,80,0.97);
@@ -643,7 +644,7 @@ html, body {
       <div class="sub">Kananaskis Country · 2,258 m · 50.94°N 115.15°W</div>
     </div>
     <div class="hdr-right">
-      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.3</div>
+      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.4</div>
       <div class="ts" id="ts0">—</div>
     </div>
   </div>
@@ -821,7 +822,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v1.1.3 · dashboard.westech.com.hk<br>
+      v1.1.4 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skinakiska.com · onthesnow.com
     </div>
 
@@ -839,7 +840,7 @@ html, body {
       <div class="sub">Banff National Park · 2,730 m · 51.08°N 115.76°W</div>
     </div>
     <div class="hdr-right">
-      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.3</div>
+      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.4</div>
       <div class="ts" id="ts1">—</div>
     </div>
   </div>
@@ -1017,7 +1018,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v1.1.3 · dashboard.westech.com.hk<br>
+      v1.1.4 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skibanff.com · skiresort.info
     </div>
 
@@ -1035,7 +1036,7 @@ html, body {
       <div class="sub">Banff National Park · 2,637 m · 51.43°N 116.18°W</div>
     </div>
     <div class="hdr-right">
-      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.3</div>
+      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.4</div>
       <div class="ts" id="ts2">—</div>
     </div>
   </div>
@@ -1213,7 +1214,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v1.1.3 · dashboard.westech.com.hk<br>
+      v1.1.4 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skilouise.com · onthesnow.com
     </div>
 
@@ -1231,7 +1232,7 @@ html, body {
       <div class="sub">Banff National Park · 2,133 m · 51.20°N 115.56°W</div>
     </div>
     <div class="hdr-right">
-      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.3</div>
+      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.4</div>
       <div class="ts" id="ts3">—</div>
     </div>
   </div>
@@ -1407,7 +1408,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v1.1.3 · dashboard.westech.com.hk<br>
+      v1.1.4 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：banffnorquay.com · onthesnow.com
     </div>
 
@@ -1425,7 +1426,7 @@ html, body {
       <div class="sub">Alberta · 1,045 m · 51.04°N 114.07°W</div>
     </div>
     <div class="hdr-right">
-      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.3</div>
+      <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v1.1.4</div>
       <div class="ts" id="ts4">—</div>
     </div>
   </div>
@@ -1571,7 +1572,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v1.1.3 · dashboard.westech.com.hk<br>
+      v1.1.4 · dashboard.westech.com.hk<br>
       資料來源：Open-Meteo (ECMWF/GFS) · MET Norway Yr.no · 每 15 分鐘自動更新
     </div>
 
@@ -2203,7 +2204,7 @@ window.addEventListener('focus', ()=>{
 });
 
 // ══════════════════════════════════════════════════════════
-//  PWA + Push Notification  (v1.1.3)
+//  PWA + Push Notification  (v1.1.4)
 // ══════════════════════════════════════════════════════════
 const PUSH_WORKER_URL = 'https://ski-push.westech.com.hk';
 const VAPID_PUBLIC_KEY = 'BCMymVroSE0rthD6UH69ur8ED9rcFPmMn95kRz-4lzooxXQeS6ah8Y5uHyp9Fy5Y7E-V79eTvNENPBBbZc_DRy4';
