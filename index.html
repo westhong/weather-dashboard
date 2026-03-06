@@ -695,7 +695,7 @@ html, body {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.1</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.2</div>
       </div>
       <div class="ts" id="ts0">—</div>
     </div>
@@ -851,7 +851,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v2.1.1 · dashboard.westech.com.hk<br>
+      v2.1.2 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skinakiska.com · onthesnow.com
     </div>
 
@@ -876,7 +876,7 @@ html, body {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.1</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.2</div>
       </div>
       <div class="ts" id="ts1">—</div>
     </div>
@@ -1032,7 +1032,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v2.1.1 · dashboard.westech.com.hk<br>
+      v2.1.2 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skibanff.com · skiresort.info
     </div>
 
@@ -1057,7 +1057,7 @@ html, body {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.1</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.2</div>
       </div>
       <div class="ts" id="ts2">—</div>
     </div>
@@ -1213,7 +1213,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v2.1.1 · dashboard.westech.com.hk<br>
+      v2.1.2 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skilouise.com · onthesnow.com
     </div>
 
@@ -1238,7 +1238,7 @@ html, body {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.1</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.2</div>
       </div>
       <div class="ts" id="ts3">—</div>
     </div>
@@ -1392,7 +1392,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v2.1.1 · dashboard.westech.com.hk<br>
+      v2.1.2 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：banffnorquay.com · onthesnow.com
     </div>
 
@@ -1417,7 +1417,7 @@ html, body {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.1</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.2</div>
       </div>
       <div class="ts" id="ts4">—</div>
     </div>
@@ -1541,7 +1541,7 @@ html, body {
     </div>
 
     <div class="vfooter full">
-      v2.1.1 · dashboard.westech.com.hk<br>
+      v2.1.2 · dashboard.westech.com.hk<br>
       資料來源：Open-Meteo (ECMWF/GFS) · MET Norway Yr.no · 每 15 分鐘自動更新
     </div>
 
@@ -2132,6 +2132,92 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ─── INIT ───────────────────────────────── */
+
+/* ─── PULL TO REFRESH ────────────────────── */
+(function(){
+  const ptr     = document.getElementById('ptr-indicator');
+  const ptrArrow= document.getElementById('ptr-arrow');
+  const ptrText = document.getElementById('ptr-text');
+  if(!ptr) return;
+
+  const THRESHOLD = 72;   // px to trigger refresh
+  const MAX_PULL  = 110;  // max visual travel
+  let startY = 0, pulling = false, triggered = false;
+
+  // Get current visible page's scroll container
+  function activeScroller() {
+    const pages = document.querySelectorAll('.page');
+    return pages[cur] || document.documentElement;
+  }
+
+  document.addEventListener('touchstart', e => {
+    const scroller = activeScroller();
+    // Only start PTR if at top of scroll AND not inside horizontal swipe drag
+    if (scroller.scrollTop <= 1) {
+      startY   = e.touches[0].clientY;
+      pulling  = true;
+      triggered= false;
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchmove', e => {
+    if (!pulling) return;
+    const dy = e.touches[0].clientY - startY;
+    if (dy <= 0) { pulling = false; hidePTR(); return; }
+
+    // Also cancel if it looks like a horizontal swipe
+    const dx = Math.abs(e.touches[0].clientX - (window._ptrStartX || e.touches[0].clientX));
+    if (dx > 20 && dx > dy) { pulling = false; hidePTR(); return; }
+
+    const travel = Math.min(dy * 0.45, MAX_PULL);
+    ptr.style.transform = `translateX(-50%) translateY(${travel - 80}px)`;
+    ptr.classList.add('visible');
+
+    if (dy >= THRESHOLD) {
+      ptrArrow.classList.add('ready');
+      ptrText.textContent = '放開以重新整理';
+    } else {
+      ptrArrow.classList.remove('ready');
+      ptrText.textContent = '下拉重新整理';
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', e => {
+    if (!pulling) return;
+    pulling = false;
+    const dy = e.changedTouches[0].clientY - startY;
+
+    if (dy >= THRESHOLD && !triggered) {
+      triggered = true;
+      doRefresh();
+    } else {
+      hidePTR();
+    }
+  }, { passive: true });
+
+  function doRefresh() {
+    ptr.style.transform = 'translateX(-50%) translateY(14px)';
+    ptr.classList.add('refreshing');
+    ptrText.textContent = '更新中…';
+    loadAll();
+    // Hide after 2s (data usually loads within that)
+    setTimeout(hidePTR, 2000);
+  }
+
+  function hidePTR() {
+    ptr.style.transform = '';
+    ptr.classList.remove('visible', 'refreshing');
+    ptrArrow.classList.remove('ready');
+    ptrText.textContent = '下拉重新整理';
+    pulling = false;
+  }
+
+  // Store touchstart X for horizontal detection
+  document.addEventListener('touchstart', e => {
+    window._ptrStartX = e.touches[0].clientX;
+  }, { passive: true });
+})();
+
 document.addEventListener('DOMContentLoaded',()=>{
   loadAll();
   setInterval(loadAll, 15*60*1000); // auto-refresh every 15 min
@@ -2155,7 +2241,7 @@ window.addEventListener('focus', ()=>{
 });
 
 // ══════════════════════════════════════════════════════════
-//  PWA + Push Notification  (v2.1.1)
+//  PWA + Push Notification  (v2.1.2)
 // ══════════════════════════════════════════════════════════
 const PUSH_WORKER_URL = '';
 let VAPID_PUBLIC_KEY = '';
@@ -2462,7 +2548,7 @@ async function devRefreshData() {
     <div class="dev-section-title">⚙️ 系統資訊</div>
     <div class="dev-row">
       <span class="dev-row-label">版本</span>
-      <span class="dev-row-value">v2.1.1 / V3 Dev</span>
+      <span class="dev-row-value">v2.1.2 / V3 Dev</span>
     </div>
     <div class="dev-row">
       <span class="dev-row-label">VAPID Key (前8碼)</span>
