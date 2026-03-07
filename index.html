@@ -3000,14 +3000,13 @@ function renderTomorrow(loc, om) {
   const el = document.getElementById(`${loc.key}-tmr`);
   if (!el || loc.key === 'c8') return; // skip city-centre (Calgary)
 
-  const now = new Date();
-  const hourNow = now.getHours();
-  // Show after 16:00 local time
-  if (hourNow < 16) { el.classList.remove('visible'); return; }
-  el.classList.add('visible');
-
   const d = om.daily;
   const h = om.hourly;
+  // Use city-local hour from OM timestamps (no 'Z' = city-local time)
+  const cityHourNow = parseInt(h.time[nowHourIdx(h.time)].slice(11, 13));
+  // Show after 16:00 city-local time
+  if (cityHourNow < 16) { el.classList.remove('visible'); return; }
+  el.classList.add('visible');
 
   // Tomorrow is index 1 in daily
   const tmrHi   = Math.round(d.temperature_2m_max[1]);
@@ -3882,12 +3881,12 @@ function geoChangecity() {
 function maybeAutoDetectOnFirstVisit() {
   const geoAsked = localStorage.getItem('v3_geo_asked');
   if (geoAsked || !navigator.geolocation) return;
-  // Mark as asked so we don't prompt again
-  localStorage.setItem('v3_geo_asked', '1');
   // Small delay so page fully renders
   setTimeout(() => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+        // Mark as asked only on success — so denial doesn't block future prompts
+        localStorage.setItem('v3_geo_asked', '1');
         const { latitude, longitude } = pos.coords;
         const result = detectNearestCity(latitude, longitude);
         localStorage.setItem('v3_geo_city', result.city);
@@ -3895,7 +3894,13 @@ function maybeAutoDetectOnFirstVisit() {
         // Always show toast — user confirms before applying
         showGeoToast(result.city, result.distKm);
       },
-      () => {} // Silently fail (user denied or unavailable)
+      (err) => {
+        // Only mark as asked if permission was explicitly denied (code 1)
+        // For timeout (code 3) or unavailable (code 2), allow retry next visit
+        if (err && err.code === 1) {
+          localStorage.setItem('v3_geo_asked', '1');
+        }
+      }
     );
   }, 1800);
 }
