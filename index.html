@@ -142,7 +142,7 @@ html, body {
 }
 /* Stage padding adjustments for banner-at-bottom */
 .page { padding-bottom: calc(72px + 40px) !important; }
-body.dev-city-bar-open .page { padding-top: 40px !important; }
+
 .page {
   width: 100vw;
   height: 100vh;
@@ -204,7 +204,232 @@ body.dev-city-bar-open .page { padding-top: 40px !important; }
 /* ── DEV MODE PAGE (V3 Bottom Sheet) ── */
 /* Body state when dev mode active */
 
-body.dev-city-bar-open #stage{padding-top:40px!important;}
+
+
+/* ════════════════════════════════════════════
+   CITY PICKER BOTTOM SHEET  (v3.6)
+════════════════════════════════════════════ */
+
+/* Backdrop */
+#city-picker-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10010;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+#city-picker-overlay.open {
+  display: block;
+  opacity: 1;
+}
+
+/* Sheet */
+#city-picker-sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 10011;
+  background: #0f1117;
+  border-radius: 22px 22px 0 0;
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+  box-shadow: 0 -8px 48px rgba(0,0,0,0.75);
+  transform: translateY(100%);
+  transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 85vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#city-picker-sheet.open {
+  transform: translateY(0);
+}
+#city-picker-sheet::-webkit-scrollbar { display: none; }
+
+/* Handle */
+.cp-handle {
+  width: 40px; height: 4px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 2px;
+  margin: 12px auto 6px;
+}
+
+/* Header row */
+.cp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 18px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.cp-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+.cp-close {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: rgba(255,255,255,0.7);
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+/* Geo detect button */
+.cp-geo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 14px;
+  padding: 11px 14px;
+  background: rgba(80,150,255,0.1);
+  border: 1px solid rgba(80,150,255,0.25);
+  border-radius: 14px;
+  cursor: pointer;
+  color: #7bb8ff;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  width: calc(100% - 28px);
+  transition: background 0.2s;
+}
+.cp-geo-row:hover, .cp-geo-row:active {
+  background: rgba(80,150,255,0.2);
+}
+.cp-geo-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+.cp-geo-text {
+  flex: 1;
+}
+.cp-geo-sub {
+  font-size: 11px;
+  color: rgba(123,184,255,0.65);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+/* City list */
+.cp-list {
+  padding: 6px 0 8px;
+}
+
+/* Each city row */
+.cp-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s;
+  position: relative;
+}
+.cp-row:hover, .cp-row:active {
+  background: rgba(255,255,255,0.06);
+}
+.cp-row.active {
+  background: rgba(80,150,255,0.1);
+}
+.cp-row + .cp-row::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 46px; right: 18px;
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+}
+
+/* Flag in row */
+.cp-flag {
+  width: 52px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 5px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  background: rgba(255,255,255,0.05);
+}
+
+/* City info */
+.cp-info {
+  flex: 1;
+  min-width: 0;
+}
+.cp-name-zh {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+}
+.cp-name-en {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+.cp-province {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  margin-top: 1px;
+}
+
+/* Checkmark */
+.cp-check {
+  font-size: 18px;
+  color: #4da3ff;
+  opacity: 0;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+}
+.cp-row.active .cp-check {
+  opacity: 1;
+}
+
+/* City toggle button: shows flag of current city in header */
+#city-toggle-btn {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 4px 10px 4px 5px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  font-weight: 600;
+  white-space: nowrap;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#city-toggle-btn:hover { background: rgba(255,255,255,0.14); }
+#city-toggle-btn .ctb-flag {
+  width: 22px; height: 15px;
+  object-fit: cover;
+  border-radius: 3px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.05);
+}
+body.dev-mode-active #city-toggle-btn {
+  display: inline-flex;
+}
+
 #dev-city-bar{padding-top:max(calc(env(safe-area-inset-top,0px) + 6px),6px);}
 body.dev-mode-active #dev-city-bar{padding-top:max(calc(env(safe-area-inset-top,0px) + 8px),8px);}
 body.dev-mode-active .ver-badge{background:rgba(204,0,0,0.2)!important;color:#ff6b6b!important;border-color:rgba(204,0,0,0.4)!important;}
@@ -217,41 +442,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 .city-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#e0e0e0;border-radius:20px;padding:6px 14px;font-size:0.85em;cursor:pointer;transition:background 0.2s,border-color 0.2s;}
 .city-btn:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);}
 .city-btn.active{background:rgba(204,0,0,0.25);border-color:#ff4444;color:#ff9999;}
-/* ── Dev Mode City Bar (appears below banner in dev mode) ── */
-#dev-city-bar{
-  display:none;
-  position:fixed;
-  top:0;left:0;right:0;
-  z-index:9998;
-  background:rgba(30,0,0,0.92);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-  padding:6px 12px 8px;
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-  white-space:nowrap;
-  border-bottom:1px solid rgba(255,60,60,0.3);
-  scrollbar-width:none;
-}
-#dev-city-bar::-webkit-scrollbar{display:none;}
-#dev-city-bar.bar-open{display:block;}
-#dev-city-bar .city-btn{
-  display:inline-block;
-  margin-right:8px;
-  font-size:0.82em;
-  padding:5px 14px;
-  white-space:nowrap;
-  vertical-align:middle;
-}
-#dev-city-bar .city-label{
-  display:inline-block;
-  color:rgba(255,120,120,0.7);
-  font-size:0.72em;
-  font-weight:700;
-  letter-spacing:0.5px;
-  margin-right:12px;
-  vertical-align:middle;
-}
+
 
 #dev-tools-panel{display:none;position:fixed;bottom:0;left:0;right:0;z-index:10001;background:#0d1117;border-radius:20px 20px 0 0;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:max(env(safe-area-inset-bottom,0px),12px);box-shadow:0 -6px 40px rgba(0,0,0,0.7);transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0,1);}
 #dev-tools-panel.open{display:block;transform:translateY(0);}
@@ -731,24 +922,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 }
 #push-bell-btn:active { opacity: 0.7; }
 /* ── City Toggle Button (dev mode only, sits next to screwdriver) ── */
-#city-toggle-btn{
-  display:none;
-  align-items:center;justify-content:center;
-  padding:2px 7px;
-  border-radius:12px;font-size:11px;
-  background:rgba(204,0,0,0.12);
-  border:1px solid rgba(204,0,0,0.3);
-  color:rgba(255,100,100,0.8);
-  cursor:pointer;user-select:none;
-  -webkit-user-select:none;-webkit-tap-highlight-color:transparent;
-  transition:background 0.2s,border-color 0.2s;
-  height:20px;margin-bottom:4px;
-}
-#city-toggle-btn.bar-open{
-  background:rgba(204,0,0,0.28);
-  border-color:#ff4444;color:#ff9999;
-}
-body.dev-mode-active #city-toggle-btn{display:inline-flex;}
+
 
 
 /* Push toast */
@@ -896,15 +1070,70 @@ body.dev-mode-active #city-toggle-btn{display:inline-flex;}
 
 <div id="push-toast"></div>
 
-<!-- ── Dev Mode City Bar (v3.1) ── -->
-<div id="dev-city-bar">
-  <span class="city-label" id="city-bar-label">📍 城市</span>
-  <button id="geo-detect-btn" onclick="autoDetectCity()" title="偵測我的位置">📍 自動偵測</button>
-  <button class="city-btn" data-city="calgary"   onclick="switchCity('calgary')"><img src="https://upload.wikimedia.org/wikipedia/en/a/a8/Flag_of_Calgary_%281983%29.svg" alt="calgary" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">卡加利</button>
-  <button class="city-btn" data-city="ottawa"    onclick="switchCity('ottawa')"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Flag_of_Ottawa%2C_Ontario.svg" alt="ottawa" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">渥太華</button>
-  <button class="city-btn" data-city="toronto"   onclick="switchCity('toronto')"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Flag_of_Toronto%2C_Canada.svg" alt="toronto" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">多倫多</button>
-  <button class="city-btn" data-city="edmonton"  onclick="switchCity('edmonton')"><img src="https://upload.wikimedia.org/wikipedia/en/9/9f/Flag_of_Edmonton.svg" alt="edmonton" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">埃德蒙頓</button>
-  <button class="city-btn" data-city="vancouver" onclick="switchCity('vancouver')"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Flag_of_Vancouver.svg" alt="vancouver" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">溫哥華</button>
+
+<!-- ── City Picker Bottom Sheet (v3.6) ── -->
+<div id="city-picker-overlay" onclick="closeCityPicker()"></div>
+<div id="city-picker-sheet">
+  <div class="cp-handle"></div>
+  <div class="cp-header">
+    <div class="cp-title">選擇城市</div>
+    <button class="cp-close" onclick="closeCityPicker()">✕</button>
+  </div>
+  <button class="cp-geo-row" onclick="autoDetectCity()">
+    <span class="cp-geo-icon">📍</span>
+    <div class="cp-geo-text">
+      <div>自動偵測位置</div>
+      <div class="cp-geo-sub">選擇距離你最近的城市</div>
+    </div>
+    <span id="cp-geo-spinner" style="display:none;font-size:16px;">⏳</span>
+  </button>
+  <div class="cp-list">
+    <button class="cp-row" data-city="calgary" onclick="pickCity('calgary')">
+      <img src="https://upload.wikimedia.org/wikipedia/en/a/a8/Flag_of_Calgary_%281983%29.svg" class="cp-flag" alt="Calgary" onerror="this.style.opacity='0.3'">
+      <div class="cp-info">
+        <div class="cp-name-zh">卡加利</div>
+        <div class="cp-name-en">Calgary</div>
+        <div class="cp-province">Alberta</div>
+      </div>
+      <div class="cp-check">✓</div>
+    </button>
+    <button class="cp-row" data-city="ottawa" onclick="pickCity('ottawa')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Flag_of_Ottawa%2C_Ontario.svg" class="cp-flag" alt="Ottawa" onerror="this.style.opacity='0.3'">
+      <div class="cp-info">
+        <div class="cp-name-zh">渥太華</div>
+        <div class="cp-name-en">Ottawa</div>
+        <div class="cp-province">Ontario / Québec</div>
+      </div>
+      <div class="cp-check">✓</div>
+    </button>
+    <button class="cp-row" data-city="toronto" onclick="pickCity('toronto')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Flag_of_Toronto%2C_Canada.svg" class="cp-flag" alt="Toronto" onerror="this.style.opacity='0.3'">
+      <div class="cp-info">
+        <div class="cp-name-zh">多倫多</div>
+        <div class="cp-name-en">Toronto</div>
+        <div class="cp-province">Ontario</div>
+      </div>
+      <div class="cp-check">✓</div>
+    </button>
+    <button class="cp-row" data-city="edmonton" onclick="pickCity('edmonton')">
+      <img src="https://upload.wikimedia.org/wikipedia/en/9/9f/Flag_of_Edmonton.svg" class="cp-flag" alt="Edmonton" onerror="this.style.opacity='0.3'">
+      <div class="cp-info">
+        <div class="cp-name-zh">埃德蒙頓</div>
+        <div class="cp-name-en">Edmonton</div>
+        <div class="cp-province">Alberta</div>
+      </div>
+      <div class="cp-check">✓</div>
+    </button>
+    <button class="cp-row" data-city="vancouver" onclick="pickCity('vancouver')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Flag_of_Vancouver.svg" class="cp-flag" alt="Vancouver" onerror="this.style.opacity='0.3'">
+      <div class="cp-info">
+        <div class="cp-name-zh">溫哥華</div>
+        <div class="cp-name-en">Vancouver</div>
+        <div class="cp-province">British Columbia</div>
+      </div>
+      <div class="cp-check">✓</div>
+    </button>
+  </div>
 </div>
 
 <!-- Geolocation result toast -->
@@ -943,7 +1172,7 @@ body.dev-mode-active #city-toggle-btn{display:inline-flex;}
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <button id="city-toggle-btn" onclick="toggleCityBar()" title="切換城市">🗺</button>
+        <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
         <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts0">—</div>
@@ -1125,7 +1354,7 @@ body.dev-mode-active #city-toggle-btn{display:inline-flex;}
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <button id="city-toggle-btn" onclick="toggleCityBar()" title="切換城市">🗺</button>
+        <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
         <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts1">—</div>
@@ -1307,7 +1536,7 @@ body.dev-mode-active #city-toggle-btn{display:inline-flex;}
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <button id="city-toggle-btn" onclick="toggleCityBar()" title="切換城市">🗺</button>
+        <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
         <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts2">—</div>
@@ -1489,7 +1718,7 @@ body.dev-mode-active #city-toggle-btn{display:inline-flex;}
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <button id="city-toggle-btn" onclick="toggleCityBar()" title="切換城市">🗺</button>
+        <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
         <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts3">—</div>
@@ -1665,7 +1894,7 @@ body.dev-mode-active #city-toggle-btn{display:inline-flex;}
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <button id="city-toggle-btn" onclick="toggleCityBar()" title="切換城市">🗺</button>
+        <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
         <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts4">—</div>
@@ -1867,7 +2096,7 @@ body.dev-mode-active #city-toggle-btn{display:inline-flex;}
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <button id="city-toggle-btn" onclick="toggleCityBar()" title="切換城市">🗺</button>
+        <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
         <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts5">—</div>
@@ -2046,7 +2275,7 @@ body.dev-mode-active #city-toggle-btn{display:inline-flex;}
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <button id="city-toggle-btn" onclick="toggleCityBar()" title="切換城市">🗺</button>
+        <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
         <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts6">—</div>
@@ -2225,7 +2454,7 @@ body.dev-mode-active #city-toggle-btn{display:inline-flex;}
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <button id="city-toggle-btn" onclick="toggleCityBar()" title="切換城市">🗺</button>
+        <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
         <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts7">—</div>
@@ -2407,7 +2636,7 @@ body.dev-mode-active #city-toggle-btn{display:inline-flex;}
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-        <button id="city-toggle-btn" onclick="toggleCityBar()" title="切換城市">🗺</button>
+        <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
         <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v2.1.4</div>
       </div>
       <div class="ts" id="ts8">—</div>
@@ -3486,7 +3715,7 @@ async function switchCity(cityKey) {
     lbl.textContent = cfg.flag + ' ' + cfg.nameZh;
   }
   // Close the bar after selection
-  closeCityBar();
+  closeCityPicker();
   // Delegate to core switch logic
   await devSwitchCity(cityKey);
 }
@@ -3611,6 +3840,7 @@ async function devSwitchCity(cityKey) {
   if (!CITY_CONFIG[cityKey] || !CITY_LOCS[cityKey]) return;
   activeCity = cityKey;
   localStorage.setItem('v3_city', cityKey);
+  updateCityToggleBtn(cityKey);
   // Update city bar label for public mode
   const lbl = document.getElementById('city-bar-label');
   if (lbl) {
@@ -3779,28 +4009,61 @@ const CITY_CENTER = {
 // Emoji per resort key (used in page header)
 const PAGE_EMOJI = ['⛷', '⛷', '🏔', '⛷', '⛷', '🏔', '⛷', '🏔'];
 
-// Toggle the city-bar visibility
-function toggleCityBar() {
-  const bar = document.getElementById('dev-city-bar');
-  const btn = document.getElementById('city-toggle-btn');
-  const isOpen = bar.classList.toggle('bar-open');
-  // sync ALL city-toggle-btn instances (one per page)
-  document.querySelectorAll('#city-toggle-btn').forEach(b => b.classList.toggle('bar-open', isOpen));
-  document.body.classList.toggle('dev-city-bar-open', isOpen);
-  if (isOpen) {
-    // Highlight active city
-    document.querySelectorAll('.city-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.city === activeCity);
-    });
+
+// ══════════════════════════════════════════════
+// CITY PICKER BOTTOM SHEET (v3.6)
+// ══════════════════════════════════════════════
+function openCityPicker() {
+  const overlay = document.getElementById('city-picker-overlay');
+  const sheet   = document.getElementById('city-picker-sheet');
+  if (!sheet) return;
+  // Highlight active city
+  document.querySelectorAll('.cp-row').forEach(r => {
+    r.classList.toggle('active', r.dataset.city === activeCity);
+  });
+  // Animate open
+  overlay.style.display = 'block';
+  requestAnimationFrame(() => {
+    overlay.classList.add('open');
+    sheet.classList.add('open');
+  });
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCityPicker() {
+  const overlay = document.getElementById('city-picker-overlay');
+  const sheet   = document.getElementById('city-picker-sheet');
+  if (!sheet) return;
+  overlay.classList.remove('open');
+  sheet.classList.remove('open');
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 360);
+}
+
+function pickCity(cityKey) {
+  closeCityPicker();
+  if (cityKey !== activeCity) {
+    devSwitchCity(cityKey);
   }
 }
 
-// Close city bar (called on exit dev mode)
-function closeCityBar() {
-  document.getElementById('dev-city-bar').classList.remove('bar-open');
-  document.querySelectorAll('#city-toggle-btn').forEach(b => b.classList.remove('bar-open'));
-  document.body.classList.remove('dev-city-bar-open');
+// Update city-toggle-btn appearance (flag image + name)
+function updateCityToggleBtn(cityKey) {
+  const cc = CITY_CONFIG[cityKey];
+  if (!cc) return;
+  document.querySelectorAll('#city-toggle-btn').forEach(btn => {
+    const img = btn.querySelector('.ctb-flag');
+    const txt = btn.querySelector('.ctb-text');
+    if (img && cc.flagUrl) {
+      img.src = cc.flagUrl;
+      img.alt = cc.name;
+    }
+    if (txt) txt.textContent = cc.nameZh;
+  });
 }
+
 
 function enterDevMode() {
   document.body.classList.add('dev-mode-active');
@@ -3831,7 +4094,8 @@ function enterDevMode() {
   });
   // Close debug panel
   document.getElementById('debug-panel').classList.remove('on');
-  devLog('Dev mode entered — city bar toggle ready');
+  devLog('Dev mode entered — city picker ready');
+  updateCityToggleBtn(activeCity || localStorage.getItem('v3_city') || 'calgary');
 
   // ── Restore remembered city (if not calgary, switch immediately)
   const savedCity = localStorage.getItem('v3_city') || 'calgary';
@@ -3840,16 +4104,14 @@ function enterDevMode() {
     devSwitchCity(savedCity);
   } else {
     // Still highlight the city buttons for calgary
-    document.querySelectorAll('.city-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.city === 'calgary');
-    });
+
   }
 }
 
 function exitDevMode() {
   document.body.classList.remove('dev-mode-active');
   closeDevPanel();
-  closeCityBar();
+  closeCityPicker();
   // Restore banner
   const banner = document.getElementById('beta-banner');
   if (banner && banner.dataset.origHtml) {
@@ -3998,17 +4260,7 @@ async function devRefreshData() {
 
 
   <!-- City Selector (v3.1) -->
-  <div class="dev-section">
-    <div class="dev-section-title">🗺️ 城市切換 <span style="font-size:0.7em;opacity:0.6;font-weight:400;">(僅開發者模式)</span></div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px;">
-      <button class="city-btn" data-city="calgary"   onclick="devSwitchCity('calgary')"><img src="https://upload.wikimedia.org/wikipedia/en/a/a8/Flag_of_Calgary_%281983%29.svg" alt="calgary" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">卡加利</button>
-      <button class="city-btn" data-city="ottawa"    onclick="devSwitchCity('ottawa')"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Flag_of_Ottawa%2C_Ontario.svg" alt="ottawa" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">渥太華</button>
-      <button class="city-btn" data-city="toronto"   onclick="devSwitchCity('toronto')"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Flag_of_Toronto%2C_Canada.svg" alt="toronto" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">多倫多</button>
-      <button class="city-btn" data-city="edmonton"  onclick="devSwitchCity('edmonton')"><img src="https://upload.wikimedia.org/wikipedia/en/9/9f/Flag_of_Edmonton.svg" alt="edmonton" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">埃德蒙頓</button>
-      <button class="city-btn" data-city="vancouver" onclick="devSwitchCity('vancouver')"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Flag_of_Vancouver.svg" alt="vancouver" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">溫哥華</button>
-    </div>
-    <div id="dev-city-result" class="dev-result"></div>
-  </div>
+  
 
   <!-- Push Notification -->
   <div class="dev-section">
