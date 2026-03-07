@@ -2998,7 +2998,7 @@ function drawSunArc(arcId,sunId,riseStr,setStr){
 /* ─── TOMORROW SMART CARD (shows after 16:00) ──────── */
 function renderTomorrow(loc, om) {
   const el = document.getElementById(`${loc.key}-tmr`);
-  if (!el || loc.id === 4) return; // skip Calgary
+  if (!el || loc.key === 'c8') return; // skip city-centre (Calgary)
 
   const now = new Date();
   const hourNow = now.getHours();
@@ -3273,7 +3273,7 @@ function render(loc, om, met){
   const precLblEl = document.getElementById(`${k}-prec-lbl`);
   if(precLblEl) precLblEl.textContent = `${precipIcon} ${precipTypeLabel}`;
   document.getElementById(`${k}-prec`).textContent = precipVal;
-  const snowDepthLbl = loc.id===4 ? `積雪深度 ${Math.round(omSnow)} cm` : `積雪 ${Math.round(omSnow)} cm`;
+  const snowDepthLbl = loc.key==='c8' ? `積雪深度 ${Math.round(omSnow)} cm` : `積雪 ${Math.round(omSnow)} cm`;
   document.getElementById(`${k}-snow`).textContent = snowDepthLbl;
   document.getElementById(`${k}-prec-bar`).style.width=`${omProb}%`;
   document.getElementById(`${k}-prob`).textContent=`降雨概率 ${omProb}%`;
@@ -3287,10 +3287,10 @@ function render(loc, om, met){
   }
 
   // ── SUN ARC (Calgary only)
-  if(document.getElementById('c4-rise')&&k==='c4'){
-    document.getElementById('c4-rise').textContent=`🌄 ${timeStr(d.sunrise[0])}`;
-    document.getElementById('c4-set').textContent=`🌇 ${timeStr(d.sunset[0])}`;
-    drawSunArc('c4-arc','c4-sun',d.sunrise[0],d.sunset[0]);
+  if(document.getElementById('c8-rise')&&k==='c8'){
+    document.getElementById('c8-rise').textContent=`🌄 ${timeStr(d.sunrise[0])}`;
+    document.getElementById('c8-set').textContent=`🌇 ${timeStr(d.sunset[0])}`;
+    drawSunArc('c8-arc','c8-sun',d.sunrise[0],d.sunset[0]);
   }
 
   // ── MULTI-SOURCE TABLE
@@ -3301,7 +3301,7 @@ function render(loc, om, met){
   `;
 
   // ── LENS (ski pages only)
-  if(loc.id !== 4){
+  if(loc.key !== 'c8'){
     const isSnow=[71,73,75,77,85,86].includes(code);
     applyLens(loc.id, omUV, omCloud, loc.alt, isSnow, !isDay, Math.round(avgT), wmoDesc(code));
   }
@@ -3366,7 +3366,7 @@ async function fetchWithRetry(url, opts={}, retries=2, timeoutMs=12000){
     }
   }
 }
-async function fetchOM(lat,lon){
+async function fetchOM(lat,lon,tz){
   const url=`https://api.open-meteo.com/v1/forecast`+
     `?latitude=${lat}&longitude=${lon}`+
     `&hourly=temperature_2m,relativehumidity_2m,dewpoint_2m,apparent_temperature,`+
@@ -3375,7 +3375,7 @@ async function fetchOM(lat,lon){
     `precipitation_probability,surface_pressure,visibility`+
     `&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset,`+
     `precipitation_sum,snowfall_sum,precipitation_probability_max,uv_index_max`+
-    `&timezone=America%2FEdmonton&forecast_days=8&current_weather=true`;
+    `&timezone=${tz||'America%2FEdmonton'}&forecast_days=8&current_weather=true`;
   return fetchWithRetry(url, {mode:'cors', cache:'no-cache'});
 }
 async function fetchMET(lat,lon,alt){
@@ -3389,7 +3389,7 @@ async function fetchMET(lat,lon,alt){
 async function loadLoc(loc){
   try{
     dbg('inf','→ '+loc.name);
-    const [om,met]=await Promise.all([fetchOM(loc.lat,loc.lon), fetchMET(loc.lat,loc.lon,loc.alt)]);
+    const [om,met]=await Promise.all([fetchOM(loc.lat,loc.lon,loc.tz), fetchMET(loc.lat,loc.lon,loc.alt)]);
     render(loc,om,met);
     // Flash hero card to signal new data
     const heroEl = document.getElementById(`${loc.key}-hero`);
@@ -4083,14 +4083,14 @@ const CITY_LOCS = {
 
 // City center coordinates for LOCS[8] (last/city page)
 const CITY_CENTER = {
-  calgary:   { name: 'Calgary',    nameZh: '卡加利',   flag: '🏙',  subName: 'Alberta',          lat: 51.0447, lon: -114.0719, alt: 1045 },
-  ottawa:    { name: 'Ottawa',     nameZh: '渥太華',   flag: '🍁', subName: 'Ontario / Quebec', lat: 45.4215, lon:  -75.6972, alt:   76 },
-  toronto:   { name: 'Toronto',    nameZh: '多倫多',   flag: '🏙️', subName: 'Ontario',           lat: 43.6532, lon:  -79.3832, alt:   76 },
-  edmonton:  { name: 'Edmonton',   nameZh: '埃德蒙頓', flag: '🌾', subName: 'Alberta',          lat: 53.5461, lon: -113.4938, alt:  671 },
-  vancouver: { name: 'Vancouver',  nameZh: '溫哥華',   flag: '🌊', subName: 'British Columbia',  lat: 49.2827, lon: -123.1207, alt:   70 },
+  calgary:   { name: 'Calgary',    nameZh: '卡加利',   flag: '🏙',  flagUrl: 'https://upload.wikimedia.org/wikipedia/en/a/a8/Flag_of_Calgary_%281983%29.svg',       subName: 'Alberta',          lat: 51.0447, lon: -114.0719, alt: 1045 },
+  ottawa:    { name: 'Ottawa',     nameZh: '渥太華',   flag: '🍁', flagUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/5f/Flag_of_Ottawa%2C_Ontario.svg',      subName: 'Ontario / Quebec', lat: 45.4215, lon:  -75.6972, alt:   76 },
+  toronto:   { name: 'Toronto',    nameZh: '多倫多',   flag: '🏙️', flagUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/f2/Flag_of_Toronto%2C_Canada.svg',      subName: 'Ontario',           lat: 43.6532, lon:  -79.3832, alt:   76 },
+  edmonton:  { name: 'Edmonton',   nameZh: '埃德蒙頓', flag: '🌾', flagUrl: 'https://upload.wikimedia.org/wikipedia/en/9/9f/Flag_of_Edmonton.svg',                    subName: 'Alberta',          lat: 53.5461, lon: -113.4938, alt:  671 },
+  vancouver: { name: 'Vancouver',  nameZh: '溫哥華',   flag: '🌊', flagUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Flag_of_Vancouver.svg',              subName: 'British Columbia',  lat: 49.2827, lon: -123.1207, alt:   70 },
 };
 // Emoji per resort key (used in page header)
-const PAGE_EMOJI = ['⛷', '⛷', '🏔', '⛷', '⛷', '🏔', '⛷', '🏔'];
+const PAGE_EMOJI = ['⛷', '⛷', '🏔', '⛷', '⛷', '🏔', '⛷', '🏔', '🏙'];
 
 
 // ══════════════════════════════════════════════
