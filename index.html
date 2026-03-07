@@ -3772,15 +3772,7 @@ function detectNearestCity(lat, lon) {
 // Public version of devSwitchCity (no dev panel required)
 async function switchCity(cityKey) {
   if (!CITY_CONFIG[cityKey] || !CITY_LOCS[cityKey]) return;
-  // Update label in city bar
-  const lbl = document.getElementById('city-bar-label');
-  if (lbl) {
-    const cfg = CITY_CONFIG[cityKey];
-    lbl.textContent = cfg.flag + ' ' + cfg.nameZh;
-  }
-  // Close the bar after selection
   closeCityPicker();
-  // Delegate to core switch logic
   await devSwitchCity(cityKey);
 }
 
@@ -3867,6 +3859,7 @@ function showGeoToast(cityKey, distKm) {
 }
 
 function hideGeoToast() {
+  clearTimeout(window._geoToastTimer);
   const toast = document.getElementById('geo-toast');
   if (toast) toast.classList.remove('visible');
 }
@@ -3874,7 +3867,9 @@ function hideGeoToast() {
 function geoConfirm() {
   hideGeoToast();
   if (_geoDetectedCity) {
-    switchCity(_geoDetectedCity);
+    const city = _geoDetectedCity;
+    _geoDetectedCity = null;
+    switchCity(city);
   }
 }
 
@@ -3924,14 +3919,7 @@ async function devSwitchCity(cityKey) {
   document.querySelectorAll('.dev-city-card').forEach(c => {
     c.classList.toggle('active', c.dataset.city === cityKey);
   });
-  // Update city bar label for public mode
-  const lbl = document.getElementById('city-bar-label');
-  if (lbl) {
-    const cfg = CITY_CONFIG[cityKey];
-    lbl.textContent = cfg.flag + ' ' + cfg.nameZh;
-  }
-
-  // ── Update selector highlight (city bar + panel)
+  // ── Update selector highlight (city picker panel)
   document.querySelectorAll('.city-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.city === cityKey);
   });
@@ -3963,12 +3951,15 @@ async function devSwitchCity(cityKey) {
       const el = document.getElementById(`c${i}-${field}`);
       if (el) el.textContent = field === 'desc' ? '載入中…' : '—';
     });
+    // Reset prec-bar width (style, not textContent)
+    const barEl = document.getElementById(`c${i}-prec-bar`);
+    if (barEl) barEl.style.width = '0%';
     // Reset timestamp
     const tsEl = document.getElementById(`ts${i}`);
     if (tsEl) tsEl.textContent = '—';
   });
 
-  // ── Also update LOCS[4] (city center page) + p4 header
+  // ── Also update LOCS[8] (city centre page p8) header
   const cc = CITY_CENTER[cityKey];
   if (cc) {
     LOCS[8].lat  = cc.lat;
@@ -3989,6 +3980,9 @@ async function devSwitchCity(cityKey) {
         const el = document.getElementById('c8-' + field);
         if (el) el.textContent = field === 'desc' ? '載入中…' : '—';
       });
+      // Reset prec-bar width (style, not textContent)
+      const bar8 = document.getElementById('c8-prec-bar');
+      if (bar8) bar8.style.width = '0%';
       const ts4 = document.getElementById('ts8');
       if (ts4) ts4.textContent = '—';
     }
@@ -4172,15 +4166,13 @@ function enterDevMode() {
     c.classList.toggle('active', c.dataset.city === _initCity);
   });
 
-  // ── Restore remembered city (if not calgary, switch immediately)
+  // ── Restore remembered city (only switch if not already on that city)
   const savedCity = localStorage.getItem('v3_city') || 'calgary';
-  if (savedCity && savedCity !== 'calgary') {
+  if (savedCity && savedCity !== activeCity) {
     devLog('Restoring saved city: ' + savedCity);
     devSwitchCity(savedCity);
-  } else {
-    // Still highlight the city buttons for calgary
-
   }
+  // else: already on correct city, no reload needed
 }
 
 function exitDevMode() {
