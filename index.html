@@ -3004,8 +3004,8 @@ function renderTomorrow(loc, om) {
 
   const d = om.daily;
   const h = om.hourly;
-  // Use city-local hour from OM timestamps (no 'Z' = city-local time)
-  const cityHourNow = parseInt(h.time[nowHourIdx(h.time)].slice(11, 13));
+  // Use current_weather.time (city-local string, same approach as render())
+  const cityHourNow = parseInt(om.current_weather.time.slice(11, 13));
   // Show after 16:00 city-local time
   if (cityHourNow < 16) { el.classList.remove('visible'); return; }
   el.classList.add('visible');
@@ -3542,11 +3542,12 @@ document.addEventListener('keydown',e=>{
   }, { passive: true });
 })();
 
+let _lastLoadTime = 0; // throttle background reloads to once per 60s
 document.addEventListener('DOMContentLoaded',()=>{
   // Initialise city toggle button with saved/default city immediately on load
   updateCityToggleBtn(activeCity);
-  loadAll();
-  setInterval(loadAll, 15*60*1000); // auto-refresh every 15 min
+  _lastLoadTime = Date.now(); loadAll();
+  setInterval(() => { _lastLoadTime = Date.now(); loadAll(); }, 15*60*1000); // auto-refresh every 15 min
   // First-visit: auto-detect nearest city and show confirmation toast
   maybeAutoDetectOnFirstVisit();
 });
@@ -3554,18 +3555,24 @@ document.addEventListener('DOMContentLoaded',()=>{
 // Reload data when tab becomes visible again (mobile background → foreground)
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState === 'visible') {
-    loadAll();
+    const now = Date.now();
+    if (now - _lastLoadTime > 60000) { _lastLoadTime = now; loadAll(); }
   }
 });
 
 // Reload on back navigation / page restore (iOS Safari BFCache)
 window.addEventListener('pageshow', (e)=>{
-  if(e.persisted) { loadAll(); updateCityToggleBtn(activeCity); }
+  if(e.persisted) {
+    const now = Date.now();
+    if (now - _lastLoadTime > 60000) { _lastLoadTime = now; loadAll(); }
+    updateCityToggleBtn(activeCity);
+  }
 });
 
 // Reload when app comes to foreground from home screen
 window.addEventListener('focus', ()=>{
-  loadAll();
+  const now = Date.now();
+  if (now - _lastLoadTime > 60000) { _lastLoadTime = now; loadAll(); }
 });
 
 // ══════════════════════════════════════════════════════════
