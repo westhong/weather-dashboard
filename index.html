@@ -3519,6 +3519,8 @@ maybeAutoDetectOnFirstVisit();
 })();
 
 document.addEventListener('DOMContentLoaded',()=>{
+  // Initialise city toggle button with saved/default city immediately on load
+  updateCityToggleBtn(activeCity);
   loadAll();
   setInterval(loadAll, 15*60*1000); // auto-refresh every 15 min
 });
@@ -3532,7 +3534,7 @@ document.addEventListener('visibilitychange', ()=>{
 
 // Reload on back navigation / page restore (iOS Safari BFCache)
 window.addEventListener('pageshow', (e)=>{
-  if(e.persisted) loadAll();
+  if(e.persisted) { loadAll(); updateCityToggleBtn(activeCity); }
 });
 
 // Reload when app comes to foreground from home screen
