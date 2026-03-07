@@ -164,6 +164,9 @@ html, body {
 #debug-panel .inf{color:#a0c4f8;}
 /* ── DEV MODE PAGE (V3 Bottom Sheet) ── */
 /* Body state when dev mode active */
+
+body.dev-mode-active #stage{padding-top:76px!important;}
+body.dev-mode-active #dev-city-bar{padding-top:max(calc(env(safe-area-inset-top,0px) + 38px),38px);}
 body.dev-mode-active .ver-badge{background:rgba(204,0,0,0.2)!important;color:#ff6b6b!important;border-color:rgba(204,0,0,0.4)!important;}
 body.dev-mode-active #push-bell-btn{background:rgba(204,0,0,0.15);border-color:rgba(204,0,0,0.4);color:#ff6b6b;}
 body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
@@ -174,6 +177,42 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 .city-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#e0e0e0;border-radius:20px;padding:6px 14px;font-size:0.85em;cursor:pointer;transition:background 0.2s,border-color 0.2s;}
 .city-btn:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);}
 .city-btn.active{background:rgba(204,0,0,0.25);border-color:#ff4444;color:#ff9999;}
+/* ── Dev Mode City Bar (appears below banner in dev mode) ── */
+#dev-city-bar{
+  display:none;
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:9998;
+  background:rgba(30,0,0,0.92);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  padding:6px 12px 8px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  white-space:nowrap;
+  border-bottom:1px solid rgba(255,60,60,0.3);
+  scrollbar-width:none;
+}
+#dev-city-bar::-webkit-scrollbar{display:none;}
+body.dev-mode-active #dev-city-bar{display:block;}
+#dev-city-bar .city-btn{
+  display:inline-block;
+  margin-right:8px;
+  font-size:0.82em;
+  padding:5px 14px;
+  white-space:nowrap;
+  vertical-align:middle;
+}
+#dev-city-bar .city-label{
+  display:inline-block;
+  color:rgba(255,120,120,0.7);
+  font-size:0.72em;
+  font-weight:700;
+  letter-spacing:0.5px;
+  margin-right:12px;
+  vertical-align:middle;
+}
+
 #dev-tools-panel{display:none;position:fixed;bottom:0;left:0;right:0;z-index:10001;background:#0d1117;border-radius:20px 20px 0 0;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:max(env(safe-area-inset-bottom,0px),12px);box-shadow:0 -6px 40px rgba(0,0,0,0.7);transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0,1);}
 #dev-tools-panel.open{display:block;transform:translateY(0);}
 .dev-sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:12px auto 0;}
@@ -704,6 +743,17 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 
 
 <div id="push-toast"></div>
+
+<!-- ── Dev Mode City Bar (v3.1) ── -->
+<div id="dev-city-bar">
+  <span class="city-label">🛠 城市</span>
+  <button class="city-btn" data-city="calgary"   onclick="devSwitchCity('calgary')">🇨🇦 卡加利</button>
+  <button class="city-btn" data-city="ottawa"    onclick="devSwitchCity('ottawa')">🍁 渥太華</button>
+  <button class="city-btn" data-city="toronto"   onclick="devSwitchCity('toronto')">🏙️ 多倫多</button>
+  <button class="city-btn" data-city="edmonton"  onclick="devSwitchCity('edmonton')">🌾 埃德蒙頓</button>
+  <button class="city-btn" data-city="vancouver" onclick="devSwitchCity('vancouver')">🌊 溫哥華</button>
+</div>
+
 
 
 <!-- ╔═══════════════════════════════════════╗
@@ -2462,7 +2512,7 @@ async function devSwitchCity(cityKey) {
   if (!CITY_CONFIG[cityKey]) return;
   activeCity = cityKey;
   localStorage.setItem('v3_city', cityKey);
-  // Update selector highlight
+  // Update selector highlight (both bar and panel)
   document.querySelectorAll('.city-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.city === cityKey);
   });
@@ -2521,7 +2571,11 @@ function enterDevMode() {
   });
   // Close debug panel
   document.getElementById('debug-panel').classList.remove('on');
-  devLog('Dev mode entered');
+  // Highlight active city in city bar
+  document.querySelectorAll('#dev-city-bar .city-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.city === activeCity);
+  });
+  devLog('Dev mode entered — city: ' + activeCity);
 }
 
 function exitDevMode() {
