@@ -3180,7 +3180,10 @@ function render(loc, om, met){
   const h=om.hourly;
   const d=om.daily;
   const cw=om.current_weather;
-  const idx=nowHourIdx(h.time);
+  // Use current_weather.time (city-local string) for timezone-correct hourly index.
+  // String-matching is timezone-independent; fall back to nowHourIdx if not found.
+  const _cwIdx = h.time.indexOf(cw.time);
+  const idx = _cwIdx >= 0 ? _cwIdx : nowHourIdx(h.time);
 
   const omT  = cw.temperature;
   const omW  = cw.windspeed;
