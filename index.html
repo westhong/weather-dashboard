@@ -140,6 +140,9 @@ html, body {
   will-change: transform;
   transition: transform .42s cubic-bezier(.25,.46,.45,.94);
 }
+/* Stage padding adjustments for banner-at-bottom */
+.page { padding-bottom: calc(72px + 40px) !important; }
+body.dev-city-bar-open .page { padding-top: 40px !important; }
 .page {
   width: 100vw;
   height: 100vh;
@@ -201,9 +204,9 @@ html, body {
 /* ── DEV MODE PAGE (V3 Bottom Sheet) ── */
 /* Body state when dev mode active */
 
-body.dev-city-bar-open #stage{padding-top:76px!important;}
+body.dev-city-bar-open #stage{padding-top:40px!important;}
 #dev-city-bar{padding-top:max(calc(env(safe-area-inset-top,0px) + 6px),6px);}
-body.dev-mode-active #dev-city-bar{padding-top:max(calc(env(safe-area-inset-top,0px) + 38px),38px);}
+body.dev-mode-active #dev-city-bar{padding-top:max(calc(env(safe-area-inset-top,0px) + 8px),8px);}
 body.dev-mode-active .ver-badge{background:rgba(204,0,0,0.2)!important;color:#ff6b6b!important;border-color:rgba(204,0,0,0.4)!important;}
 body.dev-mode-active #push-bell-btn{background:rgba(204,0,0,0.15);border-color:rgba(204,0,0,0.4);color:#ff6b6b;}
 body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
@@ -865,40 +868,29 @@ body.dev-mode-active #city-toggle-btn{display:inline-flex;}
 /* ─── v3.4c: city bar below banner in normal mode ─────────────────────────
    Banner height ≈ safe-area-inset-top + 21px (text + padding-bottom 8px).
    Keep dev mode as-is (already uses padding-top:38px to clear dev banner).  */
-body.dev-city-bar-open:not(.dev-mode-active) #dev-city-bar {
-  /* Position city bar directly below the beta-banner */
-  top: max(calc(env(safe-area-inset-top, 0px) + 21px), 36px);
-  padding-top: 6px !important;
-}
-body.dev-city-bar-open:not(.dev-mode-active) #stage {
-  /* banner height + city-bar height; use env() to match banner on notched phones */
-  padding-top: max(calc(env(safe-area-inset-top, 0px) + 21px + 40px), 76px) !important;
-}
+
+
 </style>
 </head>
 <body>
 
 <!-- ── BETA BANNER ── -->
 <div id="beta-banner" style="
-  position:fixed; top:0; left:0; right:0; z-index:9999;
+  position:fixed; bottom:0; left:0; right:0; z-index:9999;
   background:linear-gradient(135deg,#ff6b35 0%,#f7c948 100%);
   color:#1a1a1a; font-size:0.78em; font-weight:700;
-  padding: env(safe-area-inset-top,0px) 44px 8px 14px;
-  padding-top: max(env(safe-area-inset-top, 0px), 0px);
-  padding-bottom: 8px;
-  padding-left: 14px;
-  padding-right: 44px;
-  padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
-  box-shadow:0 2px 12px rgba(0,0,0,.45);
+  padding: 8px 44px 8px 14px;
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+  box-shadow:0 -2px 12px rgba(0,0,0,.45);
   line-height:1.4;
 ">
   🧪 內部測試版 &nbsp;·&nbsp; Line: <strong>westwong-ca</strong>
   <button onclick="document.getElementById('beta-banner').style.display='none';document.getElementById('stage').style.paddingTop='0'"
-    style="position:absolute;right:10px;bottom:8px;
+    style="position:absolute;right:10px;top:8px;
            background:none;border:none;font-size:1.2em;cursor:pointer;color:#1a1a1a;line-height:1;">✕</button>
 </div>
 <style>
-  #stage { padding-top: 36px; }
+  #stage { padding-top: 0px; }
 </style>
 
 
@@ -908,11 +900,11 @@ body.dev-city-bar-open:not(.dev-mode-active) #stage {
 <div id="dev-city-bar">
   <span class="city-label" id="city-bar-label">📍 城市</span>
   <button id="geo-detect-btn" onclick="autoDetectCity()" title="偵測我的位置">📍 自動偵測</button>
-  <button class="city-btn" data-city="calgary"   onclick="switchCity('calgary')">🇨🇦 卡加利</button>
-  <button class="city-btn" data-city="ottawa"    onclick="switchCity('ottawa')">🍁 渥太華</button>
-  <button class="city-btn" data-city="toronto"   onclick="switchCity('toronto')">🏙️ 多倫多</button>
-  <button class="city-btn" data-city="edmonton"  onclick="switchCity('edmonton')">🌾 埃德蒙頓</button>
-  <button class="city-btn" data-city="vancouver" onclick="switchCity('vancouver')">🌊 溫哥華</button>
+  <button class="city-btn" data-city="calgary"   onclick="switchCity('calgary')"><img src="https://upload.wikimedia.org/wikipedia/en/a/a8/Flag_of_Calgary_%281983%29.svg" alt="calgary" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">卡加利</button>
+  <button class="city-btn" data-city="ottawa"    onclick="switchCity('ottawa')"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Flag_of_Ottawa%2C_Ontario.svg" alt="ottawa" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">渥太華</button>
+  <button class="city-btn" data-city="toronto"   onclick="switchCity('toronto')"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Flag_of_Toronto%2C_Canada.svg" alt="toronto" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">多倫多</button>
+  <button class="city-btn" data-city="edmonton"  onclick="switchCity('edmonton')"><img src="https://upload.wikimedia.org/wikipedia/en/9/9f/Flag_of_Edmonton.svg" alt="edmonton" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">埃德蒙頓</button>
+  <button class="city-btn" data-city="vancouver" onclick="switchCity('vancouver')"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Flag_of_Vancouver.svg" alt="vancouver" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">溫哥華</button>
 </div>
 
 <!-- Geolocation result toast -->
@@ -3607,11 +3599,11 @@ function maybeAutoDetectOnFirstVisit() {
 // ─── END GEOLOCATION ──────────────────────────────────────────────────────────
 
 const CITY_CONFIG = {
-  calgary:   { name: 'Calgary',    nameZh: '卡加利',   flag: '🇨🇦', province: 'AB' },
-  ottawa:    { name: 'Ottawa',     nameZh: '渥太華',   flag: '🍁', province: 'ON/QC' },
-  toronto:   { name: 'Toronto',    nameZh: '多倫多',   flag: '🏙️', province: 'ON' },
-  edmonton:  { name: 'Edmonton',   nameZh: '埃德蒙頓', flag: '🌾', province: 'AB' },
-  vancouver: { name: 'Vancouver',  nameZh: '溫哥華',   flag: '🌊', province: 'BC' },
+  calgary:   { name: 'Calgary',    nameZh: '卡加利',   flag: '🇨🇦', flagUrl: 'https://upload.wikimedia.org/wikipedia/en/a/a8/Flag_of_Calgary_%281983%29.svg', province: 'AB' },
+  ottawa:    { name: 'Ottawa',     nameZh: '渥太華',   flag: '🍁', flagUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/5f/Flag_of_Ottawa%2C_Ontario.svg', province: 'ON/QC' },
+  toronto:   { name: 'Toronto',    nameZh: '多倫多',   flag: '🏙️', flagUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/f2/Flag_of_Toronto%2C_Canada.svg', province: 'ON' },
+  edmonton:  { name: 'Edmonton',   nameZh: '埃德蒙頓', flag: '🌾', flagUrl: 'https://upload.wikimedia.org/wikipedia/en/9/9f/Flag_of_Edmonton.svg', province: 'AB' },
+  vancouver: { name: 'Vancouver',  nameZh: '溫哥華',   flag: '🌊', flagUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Flag_of_Vancouver.svg', province: 'BC' },
 };
 let activeCity = localStorage.getItem('v3_city') || 'calgary';
 
@@ -3676,7 +3668,7 @@ async function devSwitchCity(cityKey) {
     if (p4) {
       const locEl = p4.querySelector('.loc');
       const subEl = p4.querySelector('.sub');
-      if (locEl) locEl.textContent = cc.flag + ' ' + cc.name;
+      if (locEl) locEl.innerHTML = (cc.flagUrl ? '<img src="'+cc.flagUrl+'" style="width:20px;height:14px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:6px;" onerror="this.style.display=\'none\'">' : cc.flag+' ') + cc.name;
       if (subEl) subEl.textContent = cc.subName + ' · ' + cc.alt.toLocaleString() + ' m';
       // Reset p4 fields
       ['temp','desc','feel','hi','lo','uv','uv-lbl','solar','wind','gust',
@@ -3822,7 +3814,7 @@ function enterDevMode() {
     banner.style.background = '#cc0000';
     banner.style.color = '#ffffff';
     banner.innerHTML = '🛠 開發者模式 &nbsp;·&nbsp; <strong style="letter-spacing:0.5px">v3.1</strong>'
-      + '<button onclick="exitDevMode()" style="position:absolute;right:10px;bottom:8px;'
+      + '<button onclick="exitDevMode()" style="position:absolute;right:10px;top:8px;'
       + 'background:none;border:none;font-size:1.2em;cursor:pointer;color:#fff;line-height:1;">✕</button>';
   }
   // ver-badge → "V3"
@@ -4009,11 +4001,11 @@ async function devRefreshData() {
   <div class="dev-section">
     <div class="dev-section-title">🗺️ 城市切換 <span style="font-size:0.7em;opacity:0.6;font-weight:400;">(僅開發者模式)</span></div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px;">
-      <button class="city-btn" data-city="calgary"   onclick="devSwitchCity('calgary')">🇨🇦 卡加利</button>
-      <button class="city-btn" data-city="ottawa"    onclick="devSwitchCity('ottawa')">🍁 渥太華</button>
-      <button class="city-btn" data-city="toronto"   onclick="devSwitchCity('toronto')">🏙️ 多倫多</button>
-      <button class="city-btn" data-city="edmonton"  onclick="devSwitchCity('edmonton')">🌾 埃德蒙頓</button>
-      <button class="city-btn" data-city="vancouver" onclick="devSwitchCity('vancouver')">🌊 溫哥華</button>
+      <button class="city-btn" data-city="calgary"   onclick="devSwitchCity('calgary')"><img src="https://upload.wikimedia.org/wikipedia/en/a/a8/Flag_of_Calgary_%281983%29.svg" alt="calgary" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">卡加利</button>
+      <button class="city-btn" data-city="ottawa"    onclick="devSwitchCity('ottawa')"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Flag_of_Ottawa%2C_Ontario.svg" alt="ottawa" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">渥太華</button>
+      <button class="city-btn" data-city="toronto"   onclick="devSwitchCity('toronto')"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Flag_of_Toronto%2C_Canada.svg" alt="toronto" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">多倫多</button>
+      <button class="city-btn" data-city="edmonton"  onclick="devSwitchCity('edmonton')"><img src="https://upload.wikimedia.org/wikipedia/en/9/9f/Flag_of_Edmonton.svg" alt="edmonton" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">埃德蒙頓</button>
+      <button class="city-btn" data-city="vancouver" onclick="devSwitchCity('vancouver')"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Flag_of_Vancouver.svg" alt="vancouver" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:2px;margin-right:5px;" onerror="this.style.display='none'">溫哥華</button>
     </div>
     <div id="dev-city-result" class="dev-result"></div>
   </div>
