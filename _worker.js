@@ -26,13 +26,91 @@ const VAPID_KEY_Y = 'a0CMZPskAivdrG1cXOr9-o5pPpn6TQFDLOJkYJp95EU';
 // Fallback for dev/testing only (remove in production)
 const VAPID_PRIVATE_FALLBACK = 'ulsPZAXPlmPjuX3BIoOFMIaALD9Z4lYB7A5-IMhT2OY';
 
-// ─── Resort Config ────────────────────────────────────────────────────────────
-const RESORTS = [
-  { id: 'nakiska',  name: 'Nakiska',         emoji: '🏔️', lat: 50.9406, lon: -115.1531, alt: 2258, page: 0 },
-  { id: 'sunshine', name: 'Sunshine Village', emoji: '☀️', lat: 51.0630, lon: -115.7729, alt: 2730, page: 1 },
-  { id: 'louise',   name: 'Lake Louise',      emoji: '🏔️', lat: 51.4254, lon: -116.1773, alt: 2637, page: 2 },
-  { id: 'norquay',  name: 'Norquay',          emoji: '⛷️', lat: 51.2035, lon: -115.5622, alt: 2133, page: 3 },
-];
+// ─── City → Resort Config (v3.1) ─────────────────────────────────────────────
+// 5 cities, 8 resorts each, sorted by fame/priority, all within 500 km radius
+const CITY_RESORTS = {
+  calgary: {
+    name: 'Calgary',
+    nameZh: '卡加利',
+    center: { lat: 51.0447, lon: -114.0719 },
+    resorts: [
+      { id: 'louise',    name: 'Lake Louise',         emoji: '🏔️', lat: 51.4254, lon: -116.1773, alt: 2637, dist: 153 },
+      { id: 'sunshine',  name: 'Sunshine Village',    emoji: '☀️', lat: 51.0630, lon: -115.7729, alt: 2730, dist: 118 },
+      { id: 'nakiska',   name: 'Nakiska',             emoji: '🎿', lat: 50.9406, lon: -115.1531, alt: 2258, dist:  77 },
+      { id: 'norquay',   name: 'Mt Norquay',          emoji: '⛷️', lat: 51.2035, lon: -115.5622, alt: 2133, dist: 106 },
+      { id: 'castle',    name: 'Castle Mountain',     emoji: '🏰', lat: 49.4665, lon: -114.4073, alt: 2275, dist: 194 },
+      { id: 'fernie',    name: 'Fernie Alpine Resort',emoji: '🦅', lat: 49.4577, lon: -115.0881, alt: 2068, dist: 189 },
+      { id: 'kickhorse', name: 'Kicking Horse',       emoji: '🐴', lat: 51.3000, lon: -117.0522, alt: 2450, dist: 205 },
+      { id: 'panorama',  name: 'Panorama Mountain',   emoji: '🌄', lat: 50.4625, lon: -116.2355, alt: 2395, dist: 165 },
+    ]
+  },
+  ottawa: {
+    name: 'Ottawa',
+    nameZh: '渥太華',
+    center: { lat: 45.4215, lon: -75.6972 },
+    resorts: [
+      { id: 'tremblant', name: 'Mont-Tremblant',      emoji: '🏔️', lat: 46.2135, lon: -74.5851, alt:  875, dist: 123 },
+      { id: 'montblanc', name: 'Mont Blanc',          emoji: '⛷️', lat: 46.0759, lon: -74.8553, alt:  300, dist: 107 },
+      { id: 'montstemarie', name: 'Mont Ste-Marie',   emoji: '🌲', lat: 46.2133, lon: -75.6167, alt:  400, dist:  86 },
+      { id: 'calabogie', name: 'Calabogie Peaks',     emoji: '🎿', lat: 45.3028, lon: -76.7372, alt:  350, dist:  82 },
+      { id: 'montchilly',name: 'Mont Chilly',         emoji: '❄️', lat: 45.5906, lon: -75.4181, alt:  230, dist:  60 },
+      { id: 'edelweiss', name: 'Sommet Edelweiss',    emoji: '🌸', lat: 45.7058, lon: -75.8303, alt:  330, dist:  27 },
+      { id: 'cascades',  name: 'Mont Cascades',       emoji: '🌊', lat: 45.6139, lon: -75.6139, alt:  200, dist:  31 },
+      { id: 'fortune',   name: 'Camp Fortune',        emoji: '🍀', lat: 45.5175, lon: -75.8428, alt:  360, dist:  14 },
+    ]
+  },
+  toronto: {
+    name: 'Toronto',
+    nameZh: '多倫多',
+    center: { lat: 43.6532, lon: -79.3832 },
+    resorts: [
+      { id: 'blue',      name: 'Blue Mountain',       emoji: '🔵', lat: 44.5017, lon: -80.3170, alt:  721, dist: 120 },
+      { id: 'tremblant', name: 'Mont-Tremblant',      emoji: '🏔️', lat: 46.2135, lon: -74.5851, alt:  875, dist: 473 },
+      { id: 'horseshoe', name: 'Horseshoe Resort',    emoji: '🎠', lat: 44.5080, lon: -79.7061, alt:  391, dist: 100 },
+      { id: 'mtstlouis', name: 'Mt St Louis Moonstone',emoji:'🌙', lat: 44.5847, lon: -79.7253, alt:  360, dist: 110 },
+      { id: 'snowvalleyb',name: 'Snow Valley Barrie', emoji: '🌨️', lat: 44.2952, lon: -79.6539, alt:  300, dist:  89 },
+      { id: 'lakeridge', name: 'Lakeridge',           emoji: '🏂', lat: 44.0142, lon: -78.9475, alt:  400, dist:  48 },
+      { id: 'beavervlly',name: 'Beaver Valley',       emoji: '🦫', lat: 44.3503, lon: -80.5581, alt:  450, dist: 131 },
+      { id: 'hidden',    name: 'Hidden Valley Highlands',emoji:'🌿',lat: 45.3453, lon: -79.1564, alt:  300, dist: 189 },
+    ]
+  },
+  edmonton: {
+    name: 'Edmonton',
+    nameZh: '埃德蒙頓',
+    center: { lat: 53.5461, lon: -113.4938 },
+    resorts: [
+      { id: 'marmot',    name: 'Marmot Basin',        emoji: '🦦', lat: 52.9079, lon: -118.0630, alt: 2612, dist: 306 },
+      { id: 'louise',    name: 'Lake Louise',         emoji: '🏔️', lat: 51.4254, lon: -116.1773, alt: 2637, dist: 298 },
+      { id: 'sunshine',  name: 'Sunshine Village',    emoji: '☀️', lat: 51.0630, lon: -115.7729, alt: 2730, dist: 314 },
+      { id: 'kickhorse', name: 'Kicking Horse',       emoji: '🐴', lat: 51.3000, lon: -117.0522, alt: 2450, dist: 344 },
+      { id: 'nakiska',   name: 'Nakiska',             emoji: '🎿', lat: 50.9406, lon: -115.1531, alt: 2258, dist: 311 },
+      { id: 'snowvalleye',name: 'Snow Valley (Edmonton)',emoji:'🌨️',lat: 53.5099, lon: -113.6312, alt: 650, dist:   9 },
+      { id: 'sunridge',  name: 'Sunridge Ski Area',   emoji: '🏂', lat: 53.5792, lon: -113.3528, alt: 660, dist:   7 },
+      { id: 'rabbithill',name: 'Rabbit Hill',         emoji: '🐇', lat: 53.3826, lon: -113.7012, alt: 760, dist:  22 },
+    ]
+  },
+  vancouver: {
+    name: 'Vancouver',
+    nameZh: '溫哥華',
+    center: { lat: 49.2827, lon: -123.1207 },
+    resorts: [
+      { id: 'whistler',  name: 'Whistler Blackcomb',  emoji: '🎿', lat: 50.1163, lon: -122.9574, alt: 2182, dist:  93 },
+      { id: 'bigwhite',  name: 'Big White',           emoji: '⚪', lat: 49.7321, lon: -118.9367, alt: 2319, dist: 306 },
+      { id: 'sunpeaks',  name: 'Sun Peaks',           emoji: '☀️', lat: 50.8824, lon: -119.8936, alt: 2080, dist: 292 },
+      { id: 'silverstar',name: 'Silver Star',         emoji: '⭐', lat: 50.3583, lon: -119.0611, alt: 1915, dist: 316 },
+      { id: 'grouse',    name: 'Grouse Mountain',     emoji: '🦅', lat: 49.3757, lon: -123.0786, alt:  916, dist:  11 },
+      { id: 'cypress',   name: 'Cypress Mountain',    emoji: '🌲', lat: 49.3954, lon: -123.2036, alt:  1440, dist: 14 },
+      { id: 'seymour',   name: 'Mt Seymour',          emoji: '🏔️', lat: 49.3793, lon: -122.9468, alt:  1454, dist: 16 },
+      { id: 'sasquatch', name: 'Sasquatch Mountain',  emoji: '🦶', lat: 49.3886, lon: -121.8886, alt:  1068, dist: 89 },
+    ]
+  }
+};
+
+// Default city (Calgary — current production)
+const DEFAULT_CITY = 'calgary';
+
+// Flat RESORTS list used by existing alert/notify logic (Calgary as default)
+const RESORTS = CITY_RESORTS[DEFAULT_CITY].resorts;
 
 // ─── Alert Thresholds ─────────────────────────────────────────────────────────
 const ALERTS = {
@@ -142,6 +220,41 @@ async function handleApi(request, env, url) {
   if (path === '/check-snow' && method === 'GET') {
     const result = await checkSnowAndNotify(env);
     return json({ ok: true, result });
+  }
+
+  // GET /api/snow?city=calgary — return snow data for a city's resorts (v3.1)
+  if (path === '/snow' && method === 'GET') {
+    const cityKey = url.searchParams.get('city') || DEFAULT_CITY;
+    const cityData = CITY_RESORTS[cityKey];
+    if (!cityData) return json({ error: `Unknown city: ${cityKey}`, known: Object.keys(CITY_RESORTS) }, 400);
+    // Try KV cache first (30 min TTL)
+    const cacheKey = `snow:${cityKey}`;
+    const cached = await KV.get(cacheKey);
+    if (cached) {
+      return new Response(cached, { status: 200, headers: { 'Content-Type': 'application/json', ...CORS } });
+    }
+    // Fetch fresh
+    const resortResults = [];
+    for (const resort of cityData.resorts) {
+      try {
+        const wd = await fetchWeather(resort);
+        resortResults.push({
+          id: resort.id,
+          name: resort.name,
+          emoji: resort.emoji,
+          dist: resort.dist,
+          temp: wd ? wd.temp : null,
+          wind: wd ? wd.wind : null,
+          snowfall_cm: wd ? wd.snowfall_cm : null,
+        });
+      } catch(e) {
+        resortResults.push({ id: resort.id, name: resort.name, emoji: resort.emoji, dist: resort.dist, error: e.message });
+      }
+    }
+    const payload = JSON.stringify({ city: cityKey, name: cityData.name, nameZh: cityData.nameZh, resorts: resortResults, fetched: new Date().toISOString() }, null, 2);
+    // Cache for 30 min
+    await KV.put(cacheKey, payload, { expirationTtl: 1800 });
+    return new Response(payload, { status: 200, headers: { 'Content-Type': 'application/json', ...CORS } });
   }
 
   // GET /api/stats — subscriber count + last check
