@@ -444,6 +444,65 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 .city-btn.active{background:rgba(204,0,0,0.25);border-color:#ff4444;color:#ff9999;}
 
 
+
+/* ── Dev Panel City Buttons (v3.2) ── */
+.dev-city-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 12px 14px;
+}
+.dev-city-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 9px 12px;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+  text-align: left;
+}
+.dev-city-card:hover,
+.dev-city-card:active {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.22);
+}
+.dev-city-card.active {
+  background: rgba(80,140,255,0.15);
+  border-color: rgba(80,140,255,0.45);
+}
+.dev-city-card .dc-flag {
+  width: 38px;
+  height: 25px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  background: rgba(255,255,255,0.05);
+}
+.dev-city-card .dc-info {
+  min-width: 0;
+}
+.dev-city-card .dc-zh {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dev-city-card .dc-en {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 1px;
+}
+.dev-city-card.active .dc-zh {
+  color: #7ab8ff;
+}
+
 #dev-tools-panel{display:none;position:fixed;bottom:0;left:0;right:0;z-index:10001;background:#0d1117;border-radius:20px 20px 0 0;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:max(env(safe-area-inset-bottom,0px),12px);box-shadow:0 -6px 40px rgba(0,0,0,0.7);transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0,1);}
 #dev-tools-panel.open{display:block;transform:translateY(0);}
 .dev-sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:12px auto 0;}
@@ -3524,15 +3583,16 @@ function showPushToast(msg, duration=3000) {
 
 // ── Update bell button state ───────────────────────────────
 function updateBellState(subscribed) {
-  const btn = document.getElementById('push-bell-btn');
-  if (!btn) return;
-  if (subscribed) {
-    btn.classList.add('subscribed');
-    btn.title = '新雪通知已開啟（點擊關閉）';
-  } else {
-    btn.classList.remove('subscribed');
-    btn.title = '點擊開啟新雪通知';
-  }
+  // querySelectorAll to sync ALL bell instances across every page
+  document.querySelectorAll('#push-bell-btn').forEach(btn => {
+    if (subscribed) {
+      btn.classList.add('subscribed');
+      btn.title = '新雪通知已開啟（點擊關閉）';
+    } else {
+      btn.classList.remove('subscribed');
+      btn.title = '點擊開啟新雪通知';
+    }
+  });
 }
 
 // ── Check current subscription status ─────────────────────
@@ -3601,8 +3661,8 @@ async function togglePushSubscription() {
     return;
   }
 
-  const btn = document.getElementById('push-bell-btn');
-  if (btn) btn.style.opacity = '0.5';
+  // Dim all bell buttons during async operation
+  document.querySelectorAll('#push-bell-btn').forEach(b => b.style.opacity = '0.5');
 
   try {
     const reg = await navigator.serviceWorker.ready;
@@ -3633,7 +3693,7 @@ async function togglePushSubscription() {
     console.error('[PWA] Push error:', e);
     showPushToast('❌ 操作失敗：' + e.message, 4000);
   } finally {
-    if (btn) btn.style.opacity = '';
+    document.querySelectorAll('#push-bell-btn').forEach(b => b.style.opacity = '');
   }
 }
 
@@ -3825,6 +3885,10 @@ async function devSwitchCity(cityKey) {
   activeCity = cityKey;
   localStorage.setItem('v3_city', cityKey);
   updateCityToggleBtn(cityKey);
+  // Sync dev panel city cards active state
+  document.querySelectorAll('.dev-city-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.city === cityKey);
+  });
   // Update city bar label for public mode
   const lbl = document.getElementById('city-bar-label');
   if (lbl) {
@@ -4067,7 +4131,11 @@ function enterDevMode() {
   // Close debug panel
   document.getElementById('debug-panel').classList.remove('on');
   devLog('Dev mode entered — city picker ready');
-  updateCityToggleBtn(activeCity || localStorage.getItem('v3_city') || 'calgary');
+  const _initCity = activeCity || localStorage.getItem('v3_city') || 'calgary';
+  updateCityToggleBtn(_initCity);
+  document.querySelectorAll('.dev-city-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.city === _initCity);
+  });
 
   // ── Restore remembered city (if not calgary, switch immediately)
   const savedCity = localStorage.getItem('v3_city') || 'calgary';
@@ -4224,8 +4292,47 @@ async function devRefreshData() {
   </div>
 
 
-  <!-- City Selector (v3.1) -->
-  
+  <!-- 🏙 城市選擇 (v3.2) -->
+  <div class="dev-section">
+    <div class="dev-section-title">🏙 選擇城市</div>
+    <div class="dev-city-grid">
+      <button class="dev-city-card" data-city="calgary" onclick="devSwitchCity('calgary');closeDevPanel()">
+        <img src="https://upload.wikimedia.org/wikipedia/en/a/a8/Flag_of_Calgary_%281983%29.svg" class="dc-flag" alt="Calgary" onerror="this.style.opacity='0.3'">
+        <div class="dc-info">
+          <div class="dc-zh">卡加利</div>
+          <div class="dc-en">Calgary</div>
+        </div>
+      </button>
+      <button class="dev-city-card" data-city="ottawa" onclick="devSwitchCity('ottawa');closeDevPanel()">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Flag_of_Ottawa%2C_Ontario.svg" class="dc-flag" alt="Ottawa" onerror="this.style.opacity='0.3'">
+        <div class="dc-info">
+          <div class="dc-zh">渥太華</div>
+          <div class="dc-en">Ottawa</div>
+        </div>
+      </button>
+      <button class="dev-city-card" data-city="toronto" onclick="devSwitchCity('toronto');closeDevPanel()">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Flag_of_Toronto%2C_Canada.svg" class="dc-flag" alt="Toronto" onerror="this.style.opacity='0.3'">
+        <div class="dc-info">
+          <div class="dc-zh">多倫多</div>
+          <div class="dc-en">Toronto</div>
+        </div>
+      </button>
+      <button class="dev-city-card" data-city="edmonton" onclick="devSwitchCity('edmonton');closeDevPanel()">
+        <img src="https://upload.wikimedia.org/wikipedia/en/9/9f/Flag_of_Edmonton.svg" class="dc-flag" alt="Edmonton" onerror="this.style.opacity='0.3'">
+        <div class="dc-info">
+          <div class="dc-zh">埃德蒙頓</div>
+          <div class="dc-en">Edmonton</div>
+        </div>
+      </button>
+      <button class="dev-city-card" data-city="vancouver" onclick="devSwitchCity('vancouver');closeDevPanel()">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Flag_of_Vancouver.svg" class="dc-flag" alt="Vancouver" onerror="this.style.opacity='0.3'">
+        <div class="dc-info">
+          <div class="dc-zh">溫哥華</div>
+          <div class="dc-en">Vancouver</div>
+        </div>
+      </button>
+    </div>
+  </div>
 
   <!-- Push Notification -->
   <div class="dev-section">
