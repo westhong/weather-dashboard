@@ -426,13 +426,13 @@ html, body {
   flex-shrink: 0;
   background: rgba(255,255,255,0.05);
 }
-/* city-toggle-btn always visible (v3.6.24) */
+/* city-toggle-btn always visible (v3.6.25) */
 
 #dev-city-bar{padding-top:max(calc(env(safe-area-inset-top,0px) + 6px),6px);}
 
 body.dev-mode-active .ver-badge{background:rgba(204,0,0,0.2)!important;color:#ff6b6b!important;border-color:rgba(204,0,0,0.4)!important;}
-body.dev-mode-active #push-bell-btn{background:rgba(204,0,0,0.15);border-color:rgba(204,0,0,0.4);color:#ff6b6b;}
-body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
+body.dev-mode-active .push-bell-btn{background:rgba(204,0,0,0.15);border-color:rgba(204,0,0,0.4);color:#ff6b6b;}
+body.dev-mode-active .push-bell-btn svg path{stroke:#ff6b6b;}
 /* Dev tools bottom sheet */
 #dev-panel-backdrop{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.55);-webkit-tap-highlight-color:transparent;}
 #dev-panel-backdrop.open{display:block;}
@@ -1202,7 +1202,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
   align-items: center;
   gap: 5px;
 }
-#push-bell-btn {
+.push-bell-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1220,24 +1220,24 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
   height: 20px;
   margin-bottom: 4px;
 }
-#push-bell-btn svg {
+.push-bell-btn svg {
   width: 10px;
   height: 10px;
   flex-shrink: 0;
 }
-#push-bell-btn svg path {
+.push-bell-btn svg path {
   stroke: var(--muted);
   transition: stroke 0.2s;
 }
-#push-bell-btn.subscribed {
+.push-bell-btn.subscribed {
   background: rgba(91,196,255,0.15);
   border-color: rgba(91,196,255,0.4);
   color: #5bc4ff;
 }
-#push-bell-btn.subscribed svg path {
+.push-bell-btn.subscribed svg path {
   stroke: #5bc4ff;
 }
-#push-bell-btn:active { opacity: 0.7; }
+.push-bell-btn:active { opacity: 0.7; }
 /* ── City Toggle Button (dev mode only, sits next to screwdriver) ── */
 
 
@@ -1601,14 +1601,14 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
     <div class="hdr-right">
       <div class="hdr-badges">
-        <button id="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
+        <button class="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.24</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.25</div>
       </div>
       <div class="ts" id="ts0">—</div>
     </div>
@@ -1766,7 +1766,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.24 · dashboard.westech.com.hk<br>
+      v3.6.25 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skilouise.com · onthesnow.com
     </div>
 
@@ -1785,14 +1785,14 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
     <div class="hdr-right">
       <div class="hdr-badges">
-        <button id="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
+        <button class="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.24</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.25</div>
       </div>
       <div class="ts" id="ts1">—</div>
     </div>
@@ -1950,8 +1950,8 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.24 · dashboard.westech.com.hk<br>
-      天氣：Open-Meteo · MET Norway ｜ 雪場：skibanff.com · skiresort.info
+      v3.6.25 · dashboard.westech.com.hk<br>
+      天氣：Open-Meteo · MET Norway ｜ 雪場：skibanff.com · onthesnow.com
     </div>
 
   </div>
@@ -1969,14 +1969,14 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
     <div class="hdr-right">
       <div class="hdr-badges">
-        <button id="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
+        <button class="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.24</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.25</div>
       </div>
       <div class="ts" id="ts2">—</div>
     </div>
@@ -2134,7 +2134,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.24 · dashboard.westech.com.hk<br>
+      v3.6.25 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skinakiska.com · onthesnow.com
     </div>
 
@@ -2153,14 +2153,14 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
     <div class="hdr-right">
       <div class="hdr-badges">
-        <button id="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
+        <button class="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.24</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.25</div>
       </div>
       <div class="ts" id="ts3">—</div>
     </div>
@@ -2316,7 +2316,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.24 · dashboard.westech.com.hk<br>
+      v3.6.25 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：banffnorquay.com · onthesnow.com
     </div>
 
@@ -2327,18 +2327,18 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
   <div class="hdr">
     <div class="hdr-left">
       <div class="loc" style="color:#10b981;">⛷ Castle Mountain</div>
-      <div class="sub">Pincher Creek, AB · 2,274 m · 49.48°N 114.45°W</div>
+      <div class="sub">Pincher Creek, AB · 2,400 m · 49.48°N 114.45°W</div>
     </div>
     <div class="hdr-right">
       <div class="hdr-badges">
-        <button id="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
+        <button class="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.24</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.25</div>
       </div>
       <div class="ts" id="ts4">—</div>
     </div>
@@ -2355,7 +2355,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 
     <!-- HERO -->
     <div class="card hero full" id="c4-hero">
-      <div class="card-label">山頂天氣 · 2,274 m</div>
+      <div class="card-label">山頂天氣 · 2,400 m</div>
       <div class="hero-row">
         <div class="hero-left">
           <div class="hero-temp-row">
@@ -2410,7 +2410,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </div>
       </div>
       <div class="ski-stats">
-        <div class="sstat"><div class="sstat-val" style="color:#a0c4f8;">136<span style="font-size:13px;font-weight:400;">cm</span></div><div class="sstat-lbl">山頂積雪<br>2,274 m</div></div>
+        <div class="sstat"><div class="sstat-val" style="color:#a0c4f8;">136<span style="font-size:13px;font-weight:400;">cm</span></div><div class="sstat-lbl">山頂積雪<br>2,400 m</div></div>
         <div class="sstat"><div class="sstat-val" style="color:#a0c4f8;">92<span style="font-size:13px;font-weight:400;">cm</span></div><div class="sstat-lbl">山腳積雪<br>1,350 m</div></div>
         <div class="sstat"><div class="sstat-val" style="color:#43c98c;">+5<span style="font-size:13px;font-weight:400;">cm</span></div><div class="sstat-lbl">昨晚<br>新雪</div></div>
         <div class="sstat"><div class="sstat-val" style="color:#ffc84a;">142<span style="font-size:13px;font-weight:400;">%</span></div><div class="sstat-lbl">vs 歷史<br>平均深度</div></div>
@@ -2517,7 +2517,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.24 · dashboard.westech.com.hk<br>
+      v3.6.25 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skicastle.ca · onthesnow.com
     </div>
 
@@ -2531,18 +2531,18 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
   <div class="hdr">
     <div class="hdr-left">
       <div class="loc" style="color:#43c98c;">🏔 Fernie Alpine Resort</div>
-      <div class="sub">Fernie, BC · 2,429 m · 49.50°N 115.09°W</div>
+      <div class="sub">Fernie, BC · 2,148 m · 49.52°N 115.08°W</div>
     </div>
     <div class="hdr-right">
       <div class="hdr-badges">
-        <button id="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
+        <button class="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.24</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.25</div>
       </div>
       <div class="ts" id="ts5">—</div>
     </div>
@@ -2700,7 +2700,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.24 · dashboard.westech.com.hk<br>
+      v3.6.25 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skifernie.com · onthesnow.com
     </div>
 
@@ -2716,14 +2716,14 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
     <div class="hdr-right">
       <div class="hdr-badges">
-        <button id="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
+        <button class="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.24</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.25</div>
       </div>
       <div class="ts" id="ts6">—</div>
     </div>
@@ -2881,7 +2881,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.24 · dashboard.westech.com.hk<br>
+      v3.6.25 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：kickinghorseresort.com · onthesnow.com
     </div>
 
@@ -2897,14 +2897,14 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
     <div class="hdr-right">
       <div class="hdr-badges">
-        <button id="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
+        <button class="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.24</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.25</div>
       </div>
       <div class="ts" id="ts7">—</div>
     </div>
@@ -3062,7 +3062,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.24 · dashboard.westech.com.hk<br>
+      v3.6.25 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：panoramaresort.com · onthesnow.com
     </div>
 
@@ -3081,14 +3081,14 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
     <div class="hdr-right">
       <div class="hdr-badges">
-        <button id="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
+        <button class="push-bell-btn" onclick="togglePushSubscription()" title="新雪通知">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.24</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.25</div>
       </div>
       <div class="ts" id="ts8">—</div>
     </div>
@@ -3212,7 +3212,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.24 · dashboard.westech.com.hk<br>
+      v3.6.25 · dashboard.westech.com.hk<br>
       資料來源：Open-Meteo (ECMWF/GFS) · MET Norway Yr.no · 每 15 分鐘自動更新
     </div>
 
@@ -3793,8 +3793,8 @@ function openSki10d(key, daily, hourly, startIdx) {
       <div class="ski10d-stat-lbl">UV 指數</div>
     </div>
     <div class="ski10d-stat">
-      <div class="ski10d-stat-val" style="font-size:18px">${verdictClass==='powder'?'🎿':verdictClass==='good'?'❄️':verdictClass==='ok'?'🧣':verdictClass==='rain'?'🌧️':verdictClass==='thunder'?'⛈️':verdictClass==='melt'?'🌡️':verdictClass==='slushy'?'🌡️':'❌'}</div>
-      <div class="ski10d-stat-lbl">評級</div>
+      <div class="ski10d-stat-val" id="ski10d-depth-${i}">${(() => { if (!hourly || !hourly.snow_depth) return '—'; const dayEnd = dateStr + 'T23:00'; let last = null; for (let _j = 0; _j < hourly.time.length; _j++) { if (hourly.time[_j] <= dayEnd && hourly.time[_j].startsWith(dateStr)) last = hourly.snow_depth[_j]; } return last != null ? Math.round(last * 100) + ' cm' : '—'; })()}</div>
+      <div class="ski10d-stat-lbl">積雪深度</div>
     </div>
   </div>
   ${snow > 0 ? `<div class="ski10d-snow-section">
@@ -4605,7 +4605,7 @@ window.addEventListener('focus', ()=>{
 });
 
 // ══════════════════════════════════════════════════════════
-//  PWA + Push Notification  (v3.6.24)
+//  PWA + Push Notification  (v3.6.25)
 // ══════════════════════════════════════════════════════════
 const PUSH_WORKER_URL = '';
 let VAPID_PUBLIC_KEY = '';
@@ -4646,7 +4646,7 @@ function showPushToast(msg, duration=3000) {
 // ── Update bell button state ───────────────────────────────
 function updateBellState(subscribed) {
   // querySelectorAll to sync ALL bell instances across every page
-  document.querySelectorAll('#push-bell-btn').forEach(btn => {
+  document.querySelectorAll('.push-bell-btn').forEach(btn => {
     if (subscribed) {
       btn.classList.add('subscribed');
       btn.title = '新雪通知已開啟（點擊關閉）';
@@ -4724,7 +4724,7 @@ async function togglePushSubscription() {
   }
 
   // Dim all bell buttons during async operation
-  document.querySelectorAll('#push-bell-btn').forEach(b => b.style.opacity = '0.5');
+  document.querySelectorAll('.push-bell-btn').forEach(b => b.style.opacity = '0.5');
 
   try {
     const reg = await navigator.serviceWorker.ready;
@@ -4755,7 +4755,7 @@ async function togglePushSubscription() {
     console.error('[PWA] Push error:', e);
     showPushToast('❌ 操作失敗：' + e.message, 4000);
   } finally {
-    document.querySelectorAll('#push-bell-btn').forEach(b => b.style.opacity = '');
+    document.querySelectorAll('.push-bell-btn').forEach(b => b.style.opacity = '');
   }
 }
 
@@ -4779,7 +4779,7 @@ const BELL_SVG = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/
 const SCREWDRIVER_SVG = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 
-// ─── v3.6.24 City Config (mirrors _worker.js CITY_RESORTS) ──────────────────────
+// ─── v3.6.25 City Config (mirrors _worker.js CITY_RESORTS) ──────────────────────
 
 // ─── GEOLOCATION & PUBLIC CITY SWITCH (v3.4) ──────────────────────────────
 
@@ -5057,7 +5057,7 @@ async function devSwitchCity(cityKey) {
   }
 }
 
-// ─── v3.6.24 City Resort Data (used by devSwitchCity to update LOCS) ─────────────
+// ─── v3.6.25 City Resort Data (used by devSwitchCity to update LOCS) ─────────────
 // TZ per city for Open-Meteo requests
 const CITY_TZ = {
   calgary:   'America/Edmonton',
@@ -5192,15 +5192,15 @@ function updateCityToggleBtn(cityKey) {
 
 function enterDevMode() {
   document.body.classList.add('dev-mode-active');
-  // (v3.6.24 public: no beta-banner)
+  // (v3.6.25 public: no beta-banner)
   // ver-badge → "V3"
   document.querySelectorAll('.ver-badge').forEach(b => {
     if (!b.dataset.origText) b.dataset.origText = b.textContent;
-    b.textContent = 'v3.6.24';
+    b.textContent = 'v3.6.25';
     b.onclick = null;
   });
   // Bell → screwdriver
-  document.querySelectorAll('#push-bell-btn').forEach(btn => {
+  document.querySelectorAll('.push-bell-btn').forEach(btn => {
     btn.innerHTML = SCREWDRIVER_SVG;
     btn.title = '開發者工具';
     btn.onclick = openDevPanel;
@@ -5227,14 +5227,14 @@ function exitDevMode() {
   document.body.classList.remove('dev-mode-active');
   closeDevPanel();
   closeCityPicker();
-  // (v3.6.24 public: no beta-banner to restore)
+  // (v3.6.25 public: no beta-banner to restore)
   // Restore ver-badge
   document.querySelectorAll('.ver-badge').forEach(b => {
     if (b.dataset.origText) b.textContent = b.dataset.origText;
     b.onclick = () => document.getElementById('debug-panel').classList.toggle('on');
   });
   // Restore bell
-  document.querySelectorAll('#push-bell-btn').forEach(btn => {
+  document.querySelectorAll('.push-bell-btn').forEach(btn => {
     btn.innerHTML = BELL_SVG;
     btn.title = '新雪通知';
     btn.onclick = togglePushSubscription;
@@ -5434,7 +5434,7 @@ async function devRefreshData() {
     <div class="dev-section-title">⚙️ 系統資訊</div>
     <div class="dev-row">
       <span class="dev-row-label">版本</span>
-      <span class="dev-row-value" id="dev-version-display">v3.1 → v3.6.24</span>
+      <span class="dev-row-value" id="dev-version-display">v3.1 → v3.6.25</span>
     </div>
     <div class="dev-row">
       <span class="dev-row-label">VAPID Key (前8碼)</span>
