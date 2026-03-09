@@ -426,7 +426,7 @@ html, body {
   flex-shrink: 0;
   background: rgba(255,255,255,0.05);
 }
-/* city-toggle-btn always visible (v3.6.15) */
+/* city-toggle-btn always visible (v3.6.16) */
 
 #dev-city-bar{padding-top:max(calc(env(safe-area-inset-top,0px) + 6px),6px);}
 
@@ -682,6 +682,63 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
   margin: 14px 0;
 }
 .tmr-verdict { cursor: pointer; }
+
+/* ─── WEEK SKI INDEX CARD ─────────────────────────────── */
+.week-ski-card {
+  margin: 6px 13px 14px;
+  background: rgba(20,30,50,0.55);
+  border: 1px solid rgba(120,160,220,0.18);
+  border-radius: 14px;
+  padding: 10px 12px 8px;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+.week-ski-card.prominent {
+  background: linear-gradient(135deg, rgba(18,55,115,0.72), rgba(55,18,95,0.62));
+  border-color: rgba(160,200,255,0.5);
+  border-width: 1.5px;
+  box-shadow: 0 4px 28px rgba(0,0,0,0.45);
+  margin-bottom: 16px;
+}
+.week-ski-card.prominent::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, #a0c4f8, #c084fc, #a0c4f8);
+}
+.week-ski-card { position: relative; overflow: hidden; }
+.wski-header { margin-bottom: 7px; display: flex; align-items: center; }
+.wski-title {
+  font-size: 11px; font-weight: 700; color: var(--muted, #8899aa);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.week-ski-card.prominent .wski-title { color: #a0c4f8; font-size: 12px; }
+.wski-row {
+  display: flex; gap: 5px; overflow-x: auto; padding-bottom: 2px;
+  -ms-overflow-style: none; scrollbar-width: none;
+}
+.wski-row::-webkit-scrollbar { display: none; }
+.wski-day {
+  flex: 0 0 auto; min-width: 54px;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 7px 5px; border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.wski-day.wski-good { border-color: rgba(67,201,140,0.32); background: rgba(67,201,140,0.05); }
+.wski-day.wski-ok   { border-color: rgba(255,200,50,0.28); background: rgba(255,200,50,0.04); }
+.wski-day.wski-bad  { border-color: rgba(255,107,107,0.24); background: rgba(255,107,107,0.04); }
+.wski-lbl   { font-size: 10px; color: var(--muted, #8899aa); margin-bottom: 3px; font-weight: 500; }
+.wski-ico   { font-size: 17px; margin-bottom: 3px; line-height: 1; }
+.wski-temp  { font-size: 11px; font-weight: 700; color: var(--text, #e0e8ff); }
+.wski-lo    { font-size: 10px; color: var(--muted, #8899aa); font-weight: 400; }
+.wski-tag {
+  margin-top: 5px; font-size: 9px; font-weight: 700;
+  padding: 2px 5px; border-radius: 8px; text-align: center;
+  white-space: nowrap; line-height: 1.4;
+}
+.wski-tag.wski-v-good { background: rgba(67,201,140,0.2);  color: #43c98c; }
+.wski-tag.wski-v-ok   { background: rgba(255,200,50,0.15); color: #ffc832; }
+.wski-tag.wski-v-bad  { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+
 .tmr-verdict:hover
 /* ── History Chart ──────────────────────────── */
 .tmr-chart-wrap {
@@ -1363,7 +1420,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.16</div>
       </div>
       <div class="ts" id="ts0">—</div>
     </div>
@@ -1371,7 +1428,9 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 
   <!-- TOMORROW CARD (shows after 16:00) -->
   <div style="padding:0 13px;">
-    <div id="c0-tmr" class="tmr-card"></div>
+    
+<div id="c0-week-ski" class="week-ski-card"></div>
+<div id="c0-tmr" class="tmr-card"></div>
   </div>
 
   <div class="grid">
@@ -1519,7 +1578,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.15 · dashboard.westech.com.hk<br>
+      v3.6.16 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skilouise.com · onthesnow.com
     </div>
 
@@ -1545,7 +1604,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.16</div>
       </div>
       <div class="ts" id="ts1">—</div>
     </div>
@@ -1553,7 +1612,9 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 
   <!-- TOMORROW CARD (shows after 16:00) -->
   <div style="padding:0 13px;">
-    <div id="c1-tmr" class="tmr-card"></div>
+    
+<div id="c1-week-ski" class="week-ski-card"></div>
+<div id="c1-tmr" class="tmr-card"></div>
   </div>
 
   <div class="grid">
@@ -1701,7 +1762,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.15 · dashboard.westech.com.hk<br>
+      v3.6.16 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skibanff.com · skiresort.info
     </div>
 
@@ -1727,7 +1788,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.16</div>
       </div>
       <div class="ts" id="ts2">—</div>
     </div>
@@ -1735,7 +1796,9 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 
   <!-- TOMORROW CARD (shows after 16:00) -->
   <div style="padding:0 13px;">
-    <div id="c2-tmr" class="tmr-card"></div>
+    
+<div id="c2-week-ski" class="week-ski-card"></div>
+<div id="c2-tmr" class="tmr-card"></div>
   </div>
 
   <div class="grid">
@@ -1883,7 +1946,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.15 · dashboard.westech.com.hk<br>
+      v3.6.16 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skinakiska.com · onthesnow.com
     </div>
 
@@ -1909,7 +1972,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.16</div>
       </div>
       <div class="ts" id="ts3">—</div>
     </div>
@@ -1917,7 +1980,9 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 
   <!-- TOMORROW CARD (shows after 16:00) -->
   <div style="padding:0 13px;">
-    <div id="c3-tmr" class="tmr-card"></div>
+    
+<div id="c3-week-ski" class="week-ski-card"></div>
+<div id="c3-tmr" class="tmr-card"></div>
   </div>
 
   <div class="grid">
@@ -2063,7 +2128,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.15 · dashboard.westech.com.hk<br>
+      v3.6.16 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：banffnorquay.com · onthesnow.com
     </div>
 
@@ -2085,7 +2150,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.16</div>
       </div>
       <div class="ts" id="ts4">—</div>
     </div>
@@ -2093,7 +2158,9 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 
   <!-- TOMORROW CARD (shows after 16:00) -->
   <div style="padding:0 13px;">
-    <div id="c4-tmr" class="tmr-card"></div>
+    
+<div id="c4-week-ski" class="week-ski-card"></div>
+<div id="c4-tmr" class="tmr-card"></div>
   </div>
 
   <div class="grid">
@@ -2262,7 +2329,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.15 · dashboard.westech.com.hk<br>
+      v3.6.16 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skicastle.ca · onthesnow.com
     </div>
 
@@ -2287,7 +2354,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.16</div>
       </div>
       <div class="ts" id="ts5">—</div>
     </div>
@@ -2295,7 +2362,9 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 
   <!-- TOMORROW CARD (shows after 16:00) -->
   <div style="padding:0 13px;">
-    <div id="c5-tmr" class="tmr-card"></div>
+    
+<div id="c5-week-ski" class="week-ski-card"></div>
+<div id="c5-tmr" class="tmr-card"></div>
   </div>
 
   <div class="grid">
@@ -2443,7 +2512,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.15 · dashboard.westech.com.hk<br>
+      v3.6.16 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skifernie.com · onthesnow.com
     </div>
 
@@ -2466,7 +2535,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.16</div>
       </div>
       <div class="ts" id="ts6">—</div>
     </div>
@@ -2474,7 +2543,9 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 
   <!-- TOMORROW CARD (shows after 16:00) -->
   <div style="padding:0 13px;">
-    <div id="c6-tmr" class="tmr-card"></div>
+    
+<div id="c6-week-ski" class="week-ski-card"></div>
+<div id="c6-tmr" class="tmr-card"></div>
   </div>
 
   <div class="grid">
@@ -2622,7 +2693,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.15 · dashboard.westech.com.hk<br>
+      v3.6.16 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：kickinghorseresort.com · onthesnow.com
     </div>
 
@@ -2645,7 +2716,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.16</div>
       </div>
       <div class="ts" id="ts7">—</div>
     </div>
@@ -2653,7 +2724,9 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
 
   <!-- TOMORROW CARD (shows after 16:00) -->
   <div style="padding:0 13px;">
-    <div id="c7-tmr" class="tmr-card"></div>
+    
+<div id="c7-week-ski" class="week-ski-card"></div>
+<div id="c7-tmr" class="tmr-card"></div>
   </div>
 
   <div class="grid">
@@ -2801,7 +2874,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.15 · dashboard.westech.com.hk<br>
+      v3.6.16 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：panoramaresort.com · onthesnow.com
     </div>
 
@@ -2827,7 +2900,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.16</div>
       </div>
       <div class="ts" id="ts8">—</div>
     </div>
@@ -2951,7 +3024,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.15 · dashboard.westech.com.hk<br>
+      v3.6.16 · dashboard.westech.com.hk<br>
       資料來源：Open-Meteo (ECMWF/GFS) · MET Norway Yr.no · 每 15 分鐘自動更新
     </div>
 
@@ -3383,6 +3456,66 @@ function closeTmrModal() {
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTmrModal(); });
 
+
+/* ─── WEEK SKI INDEX ──────────────────────────────────────── */
+function computeDaySkiVerdict(dateStr, daily, hourly, idx) {
+  const code = daily.weathercode[idx];
+  const hi   = daily.temperature_2m_max[idx];
+  const snow = daily.snowfall_sum[idx] || 0;
+  const isBadCode = [95,96,99,71,73,75,77].includes(code);
+  let windMax = 0;
+  if (hourly && hourly.time) {
+    const idxs = [];
+    for (let j = 0; j < hourly.time.length; j++) {
+      if (hourly.time[j].startsWith(dateStr)) idxs.push(j);
+    }
+    if (idxs.length > 0) {
+      windMax = Math.max(...idxs.map(j =>
+        Math.max(hourly.windspeed_10m?.[j] ?? 0, hourly.windgusts_10m?.[j] ?? 0)
+      ));
+    }
+  }
+  let verdict, verdictClass;
+  if (isBadCode || windMax > 60) {
+    verdict = '⚠️ 惡劣'; verdictClass = 'bad';
+  } else if (snow > 5 && hi >= -15) {
+    verdict = '🎿 粉雪'; verdictClass = 'good';
+  } else if (hi >= -5 && !isBadCode) {
+    verdict = '✅ 適合'; verdictClass = 'good';
+  } else if (hi >= -12) {
+    verdict = '🧣 尚可'; verdictClass = 'ok';
+  } else {
+    verdict = '🥶 極寒'; verdictClass = 'bad';
+  }
+  return { verdict, verdictClass };
+}
+
+function renderWeekSki(key, daily, hourly, cityHourNow) {
+  const el = document.getElementById(`${key}-week-ski`);
+  if (!el) return;
+  const isAfter16 = cityHourNow >= 16;
+  el.className = 'week-ski-card' + (isAfter16 ? ' prominent' : '');
+  let daysHtml = '';
+  for (let i = 0; i < 7; i++) {
+    const dateStr = daily.time[i];
+    const dt = new Date(dateStr + 'T12:00');
+    const dayLbl = i === 0 ? '今天' : i === 1 ? '明天'
+      : dt.toLocaleDateString('zh-Hant', {weekday: 'short'});
+    const icon = wmoIcon(daily.weathercode[i], true);
+    const hi = Math.round(daily.temperature_2m_max[i]);
+    const lo = Math.round(daily.temperature_2m_min[i]);
+    const {verdict, verdictClass} = computeDaySkiVerdict(dateStr, daily, hourly, i);
+    daysHtml += `<div class="wski-day wski-${verdictClass}">
+  <div class="wski-lbl">${dayLbl}</div>
+  <div class="wski-ico">${icon}</div>
+  <div class="wski-temp">${hi}° <span class="wski-lo">${lo}°</span></div>
+  <div class="wski-tag wski-v-${verdictClass}">${verdict}</div>
+</div>`;
+  }
+  el.innerHTML = `<div class="wski-header"><span class="wski-title">⛷️ 7天滑雪指數</span></div>
+<div class="wski-row">${daysHtml}</div>`;
+}
+
 /* ─── TOMORROW SMART CARD (shows after 16:00) ──────── */
 function renderTomorrow(loc, om) {
   const el = document.getElementById(`${loc.key}-tmr`);
@@ -3392,6 +3525,8 @@ function renderTomorrow(loc, om) {
   const h = om.hourly;
   // Use current_weather.time (city-local string, same approach as render())
   const cityHourNow = parseInt(om.current_weather.time.slice(11, 13));
+  // Render week ski index (always, regardless of time)
+  renderWeekSki(loc.key, d, h, cityHourNow);
   // Show after 16:00 city-local time
   if (cityHourNow < 16) { el.classList.remove('visible'); return; }
   el.classList.add('visible');
@@ -3971,7 +4106,7 @@ window.addEventListener('focus', ()=>{
 });
 
 // ══════════════════════════════════════════════════════════
-//  PWA + Push Notification  (v3.6.15)
+//  PWA + Push Notification  (v3.6.16)
 // ══════════════════════════════════════════════════════════
 const PUSH_WORKER_URL = '';
 let VAPID_PUBLIC_KEY = '';
@@ -4145,7 +4280,7 @@ const BELL_SVG = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/
 const SCREWDRIVER_SVG = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 
-// ─── v3.6.15 City Config (mirrors _worker.js CITY_RESORTS) ──────────────────────
+// ─── v3.6.16 City Config (mirrors _worker.js CITY_RESORTS) ──────────────────────
 
 // ─── GEOLOCATION & PUBLIC CITY SWITCH (v3.4) ──────────────────────────────
 
@@ -4423,7 +4558,7 @@ async function devSwitchCity(cityKey) {
   }
 }
 
-// ─── v3.6.15 City Resort Data (used by devSwitchCity to update LOCS) ─────────────
+// ─── v3.6.16 City Resort Data (used by devSwitchCity to update LOCS) ─────────────
 // TZ per city for Open-Meteo requests
 const CITY_TZ = {
   calgary:   'America/Edmonton',
@@ -4558,11 +4693,11 @@ function updateCityToggleBtn(cityKey) {
 
 function enterDevMode() {
   document.body.classList.add('dev-mode-active');
-  // (v3.6.15 public: no beta-banner)
+  // (v3.6.16 public: no beta-banner)
   // ver-badge → "V3"
   document.querySelectorAll('.ver-badge').forEach(b => {
     if (!b.dataset.origText) b.dataset.origText = b.textContent;
-    b.textContent = 'v3.6.15';
+    b.textContent = 'v3.6.16';
     b.onclick = null;
   });
   // Bell → screwdriver
@@ -4593,7 +4728,7 @@ function exitDevMode() {
   document.body.classList.remove('dev-mode-active');
   closeDevPanel();
   closeCityPicker();
-  // (v3.6.15 public: no beta-banner to restore)
+  // (v3.6.16 public: no beta-banner to restore)
   // Restore ver-badge
   document.querySelectorAll('.ver-badge').forEach(b => {
     if (b.dataset.origText) b.textContent = b.dataset.origText;
@@ -4800,7 +4935,7 @@ async function devRefreshData() {
     <div class="dev-section-title">⚙️ 系統資訊</div>
     <div class="dev-row">
       <span class="dev-row-label">版本</span>
-      <span class="dev-row-value" id="dev-version-display">v3.1 → v3.6.15</span>
+      <span class="dev-row-value" id="dev-version-display">v3.1 → v3.6.16</span>
     </div>
     <div class="dev-row">
       <span class="dev-row-label">VAPID Key (前8碼)</span>
