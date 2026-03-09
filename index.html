@@ -426,7 +426,7 @@ html, body {
   flex-shrink: 0;
   background: rgba(255,255,255,0.05);
 }
-/* city-toggle-btn always visible (v3.6.14) */
+/* city-toggle-btn always visible (v3.6.15) */
 
 #dev-city-bar{padding-top:max(calc(env(safe-area-inset-top,0px) + 6px),6px);}
 
@@ -620,6 +620,8 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
   box-shadow: 0 24px 64px rgba(0,0,0,0.6);
   animation: tmrModalIn 0.22s ease;
 }
+
+@keyframes spin { to { transform: rotate(360deg); } }
 @keyframes tmrModalIn {
   from { opacity:0; transform: scale(0.92) translateY(12px); }
   to   { opacity:1; transform: scale(1)    translateY(0);    }
@@ -680,7 +682,43 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
   margin: 14px 0;
 }
 .tmr-verdict { cursor: pointer; }
-.tmr-verdict:hover { opacity: 0.82; transform: scale(1.03); transition: all 0.15s; }
+.tmr-verdict:hover
+/* ── History Chart ──────────────────────────── */
+.tmr-chart-wrap {
+  margin-top: 4px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  padding: 10px 8px 6px;
+  position: relative;
+  min-height: 60px;
+}
+.tmr-chart-loading {
+  display: flex; align-items: center; justify-content: center;
+  height: 140px; color: var(--muted,#8899aa); font-size: 12px; gap: 8px;
+}
+.tmr-chart-legend {
+  display: flex; gap: 14px; justify-content: center;
+  margin-top: 6px; flex-wrap: wrap;
+}
+.tmr-chart-legend-item {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 10px; color: var(--muted,#8899aa);
+}
+.tmr-chart-legend-line {
+  width: 18px; height: 3px; border-radius: 2px;
+}
+.tmr-chart-legend-bar {
+  width: 10px; height: 10px; border-radius: 2px;
+}
+.tmr-chart-tooltip {
+  position: absolute; background: rgba(20,25,40,0.95);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px; padding: 7px 10px;
+  font-size: 11px; color: #e0e8ff; pointer-events: none;
+  white-space: nowrap; z-index: 10;
+  transition: opacity 0.12s;
+}
+ { opacity: 0.82; transform: scale(1.03); transition: all 0.15s; }
 
 
 /* Version badge top-right */
@@ -1325,7 +1363,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.14</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
       </div>
       <div class="ts" id="ts0">—</div>
     </div>
@@ -1481,7 +1519,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.14 · dashboard.westech.com.hk<br>
+      v3.6.15 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skilouise.com · onthesnow.com
     </div>
 
@@ -1507,7 +1545,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.14</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
       </div>
       <div class="ts" id="ts1">—</div>
     </div>
@@ -1663,7 +1701,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.14 · dashboard.westech.com.hk<br>
+      v3.6.15 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skibanff.com · skiresort.info
     </div>
 
@@ -1689,7 +1727,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.14</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
       </div>
       <div class="ts" id="ts2">—</div>
     </div>
@@ -1845,7 +1883,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.14 · dashboard.westech.com.hk<br>
+      v3.6.15 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skinakiska.com · onthesnow.com
     </div>
 
@@ -1871,7 +1909,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.14</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
       </div>
       <div class="ts" id="ts3">—</div>
     </div>
@@ -2025,7 +2063,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.14 · dashboard.westech.com.hk<br>
+      v3.6.15 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：banffnorquay.com · onthesnow.com
     </div>
 
@@ -2047,7 +2085,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.14</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
       </div>
       <div class="ts" id="ts4">—</div>
     </div>
@@ -2224,7 +2262,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.14 · dashboard.westech.com.hk<br>
+      v3.6.15 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skicastle.ca · onthesnow.com
     </div>
 
@@ -2249,7 +2287,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.14</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
       </div>
       <div class="ts" id="ts5">—</div>
     </div>
@@ -2405,7 +2443,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.14 · dashboard.westech.com.hk<br>
+      v3.6.15 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：skifernie.com · onthesnow.com
     </div>
 
@@ -2428,7 +2466,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.14</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
       </div>
       <div class="ts" id="ts6">—</div>
     </div>
@@ -2584,7 +2622,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.14 · dashboard.westech.com.hk<br>
+      v3.6.15 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：kickinghorseresort.com · onthesnow.com
     </div>
 
@@ -2607,7 +2645,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.14</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
       </div>
       <div class="ts" id="ts7">—</div>
     </div>
@@ -2763,7 +2801,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.14 · dashboard.westech.com.hk<br>
+      v3.6.15 · dashboard.westech.com.hk<br>
       天氣：Open-Meteo · MET Norway ｜ 雪場：panoramaresort.com · onthesnow.com
     </div>
 
@@ -2789,7 +2827,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
         </svg>
       </button>
         <button id="city-toggle-btn" onclick="openCityPicker()" title="切換城市"><img class="ctb-flag" src="" alt="flag" onerror="this.style.opacity='0.3'"><span class="ctb-text">城市</span></button>
-        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.14</div>
+        <div class="ver-badge" onclick="document.getElementById('debug-panel').classList.toggle('on')">v3.6.15</div>
       </div>
       <div class="ts" id="ts8">—</div>
     </div>
@@ -2913,7 +2951,7 @@ body.dev-mode-active #push-bell-btn svg path{stroke:#ff6b6b;}
     </div>
 
     <div class="vfooter full">
-      v3.6.14 · dashboard.westech.com.hk<br>
+      v3.6.15 · dashboard.westech.com.hk<br>
       資料來源：Open-Meteo (ECMWF/GFS) · MET Norway Yr.no · 每 15 分鐘自動更新
     </div>
 
@@ -3174,7 +3212,7 @@ function buildTmrAnalysis(locName, tmrHi, tmrLo, tmrCode, tmrSnow, tmrProb, wind
   return { tmrDate, reasonHTML, statsHTML };
 }
 
-function openTmrModal(key) {
+async function openTmrModal(key) {
   const d = TMR_ANALYSIS[key];
   if (!d) return;
   const overlay = document.getElementById('tmr-modal-overlay');
@@ -3187,6 +3225,155 @@ function openTmrModal(key) {
   document.getElementById('tmr-modal-stats').innerHTML = d.statsHTML;
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
+
+  // Reset chart to loading state
+  const chartSvg = document.getElementById('tmr-chart-svg');
+  const chartLoading = document.getElementById('tmr-chart-loading');
+  const chartLegend = document.getElementById('tmr-chart-legend');
+  chartSvg.style.display = 'none';
+  chartLegend.style.display = 'none';
+  chartLoading.style.display = 'flex';
+
+  // Use cached history or fetch fresh
+  try {
+    const loc = LOCS.find(l => l.key === key);
+    if (!d.historyDays) {
+      const hist = await fetchOMHistory(loc.lat, loc.lon, loc.tz);
+      const dd = hist.daily;
+      // past_days=7 + forecast_days=1 → indices 0-6 = last 7 days, index 7 = today
+      const pastLen = dd.time.length - 1; // exclude today
+      d.historyDays = dd.time.slice(0, pastLen).map((t, i) => ({
+        date: t,
+        tmax: Math.round(dd.temperature_2m_max[i]),
+        tmin: Math.round(dd.temperature_2m_min[i]),
+        snow: +(dd.snowfall_sum[i] || 0).toFixed(1)
+      }));
+    }
+    chartLoading.style.display = 'none';
+    chartSvg.style.display = 'block';
+    chartLegend.style.display = 'flex';
+    renderTmrChart(chartSvg, d.historyDays);
+  } catch(e) {
+    chartLoading.innerHTML = '⚠️ 無法載入歷史數據';
+  }
+}
+
+async function fetchOMHistory(lat, lon, tz) {
+  const url = `https://api.open-meteo.com/v1/forecast` +
+    `?latitude=${lat}&longitude=${lon}` +
+    `&daily=temperature_2m_max,temperature_2m_min,snowfall_sum` +
+    `&past_days=7&forecast_days=1` +
+    `&timezone=${encodeURIComponent(tz)}`;
+  const r = await fetch(url, {mode:'cors', cache:'no-cache'});
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+function renderTmrChart(container, days) {
+  const wrap = container.closest('.tmr-chart-wrap') || container.parentElement;
+  const W = (wrap.clientWidth || 340) - 0; // use actual container width
+  const H = 155;
+  const padL = 30, padR = 10, padT = 14, padB = 26;
+  const cW = W - padL - padR;
+  const cH = H - padT - padB;
+
+  const allTemps = days.flatMap(d => [d.tmax, d.tmin]);
+  const tMin = Math.floor(Math.min(...allTemps)) - 2;
+  const tMax = Math.ceil(Math.max(...allTemps)) + 2;
+  const tRange = tMax - tMin || 1;
+  const snowMax = Math.max(...days.map(d => d.snow), 3);
+
+  const n = days.length;
+  const tx = i => padL + (n < 2 ? cW/2 : (i / (n-1)) * cW);
+  const ty = t => padT + (1 - (t - tMin) / tRange) * cH;
+
+  // gridlines & y-labels
+  const yTicks = 4;
+  let gridLines = '', yLabels = '';
+  for (let i = 0; i <= yTicks; i++) {
+    const t = tMin + (i / yTicks) * tRange;
+    const y = ty(t).toFixed(1);
+    gridLines += `<line x1="${padL}" y1="${y}" x2="${(W-padR).toFixed(1)}" y2="${y}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+    yLabels   += `<text x="${padL-4}" y="${(+y+3.5).toFixed(1)}" text-anchor="end" fill="#667788" font-size="9">${Math.round(t)}°</text>`;
+  }
+
+  // snowfall bars (rendered below lines)
+  const barW = Math.max(6, cW / n * 0.45);
+  let snowBars = '';
+  const snowScaleH = cH * 0.42; // bars occupy max 42% of chart height
+  for (let i = 0; i < n; i++) {
+    if (days[i].snow <= 0) continue;
+    const bh = (days[i].snow / snowMax) * snowScaleH;
+    const bx = (tx(i) - barW/2).toFixed(1);
+    const by = (H - padB - bh).toFixed(1);
+    snowBars += `<rect x="${bx}" y="${by}" width="${barW.toFixed(1)}" height="${bh.toFixed(1)}" fill="rgba(120,185,255,0.52)" rx="2.5"/>`;
+    if (days[i].snow >= 1) {
+      snowBars += `<text x="${tx(i).toFixed(1)}" y="${(H-padB-bh-3).toFixed(1)}" text-anchor="middle" fill="rgba(140,195,255,0.85)" font-size="8.5">${days[i].snow}</text>`;
+    }
+  }
+
+  // temperature paths
+  const maxPts = days.map((d,i) => `${i===0?'M':'L'}${tx(i).toFixed(1)},${ty(d.tmax).toFixed(1)}`).join(' ');
+  const minPts = days.map((d,i) => `${i===0?'M':'L'}${tx(i).toFixed(1)},${ty(d.tmin).toFixed(1)}`).join(' ');
+  const revMin = [...days].reverse().map((d,i) => `L${tx(n-1-i).toFixed(1)},${ty(d.tmin).toFixed(1)}`).join(' ');
+  const areaPath = maxPts + ' ' + revMin + ' Z';
+
+  // dots with tooltip data
+  let maxDots = '', minDots = '';
+  for (let i = 0; i < n; i++) {
+    const cx = tx(i).toFixed(1);
+    maxDots += `<circle class="tmr-dot" cx="${cx}" cy="${ty(days[i].tmax).toFixed(1)}" r="3.5" fill="#ff9a6c" data-i="${i}"/>`;
+    minDots += `<circle class="tmr-dot" cx="${cx}" cy="${ty(days[i].tmin).toFixed(1)}" r="3.5" fill="#a0c4f8" data-i="${i}"/>`;
+  }
+
+  // x-axis labels
+  let xLabels = '';
+  for (let i = 0; i < n; i++) {
+    const dt = new Date(days[i].date + 'T12:00');
+    const lbl = dt.toLocaleDateString('zh-Hant', {weekday:'short', month:'numeric', day:'numeric'})
+                  .replace('週','').replace(/(\d+)月(\d+)日/,'$1/$2');
+    xLabels += `<text x="${tx(i).toFixed(1)}" y="${H-5}" text-anchor="middle" fill="#667788" font-size="9">${lbl}</text>`;
+  }
+
+  const svgStr = `<svg id="tmr-hist-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;overflow:visible">
+  ${gridLines}
+  ${snowBars}
+  <path d="${areaPath}" fill="rgba(255,150,100,0.07)"/>
+  <path d="${maxPts}" fill="none" stroke="#ff9a6c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="${minPts}" fill="none" stroke="#a0c4f8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  ${maxDots}${minDots}
+  ${xLabels}${yLabels}
+</svg>`;
+
+  container.innerHTML = svgStr;
+
+  // Tooltip on hover
+  const tooltip = document.createElement('div');
+  tooltip.className = 'tmr-chart-tooltip';
+  tooltip.style.opacity = '0';
+  wrap.style.position = 'relative';
+  wrap.appendChild(tooltip);
+
+  container.querySelectorAll('.tmr-dot').forEach(dot => {
+    dot.style.cursor = 'crosshair';
+    dot.addEventListener('mouseenter', e => {
+      const i = +dot.dataset.i;
+      const day = days[i];
+      const dt = new Date(day.date + 'T12:00');
+      const lbl = dt.toLocaleDateString('zh-Hant',{month:'short',day:'numeric',weekday:'short'});
+      tooltip.innerHTML = `<strong>${lbl}</strong><br>🌡 ${day.tmax}° / ${day.tmin}°C${day.snow > 0 ? '<br>❄️ 降雪 ' + day.snow + ' cm' : ''}`;
+      const rect = wrap.getBoundingClientRect();
+      const dotRect = dot.getBoundingClientRect();
+      let left = dotRect.left - rect.left - 10;
+      let top  = dotRect.top  - rect.top  - 58;
+      if (left + 130 > W) left = W - 135;
+      if (left < 0) left = 4;
+      tooltip.style.left = left + 'px';
+      tooltip.style.top  = top + 'px';
+      tooltip.style.opacity = '1';
+    });
+    dot.addEventListener('mouseleave', () => { tooltip.style.opacity = '0'; });
+  });
 }
 
 function closeTmrModal() {
@@ -3784,7 +3971,7 @@ window.addEventListener('focus', ()=>{
 });
 
 // ══════════════════════════════════════════════════════════
-//  PWA + Push Notification  (v3.6.14)
+//  PWA + Push Notification  (v3.6.15)
 // ══════════════════════════════════════════════════════════
 const PUSH_WORKER_URL = '';
 let VAPID_PUBLIC_KEY = '';
@@ -3958,7 +4145,7 @@ const BELL_SVG = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/
 const SCREWDRIVER_SVG = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 
-// ─── v3.6.14 City Config (mirrors _worker.js CITY_RESORTS) ──────────────────────
+// ─── v3.6.15 City Config (mirrors _worker.js CITY_RESORTS) ──────────────────────
 
 // ─── GEOLOCATION & PUBLIC CITY SWITCH (v3.4) ──────────────────────────────
 
@@ -4236,7 +4423,7 @@ async function devSwitchCity(cityKey) {
   }
 }
 
-// ─── v3.6.14 City Resort Data (used by devSwitchCity to update LOCS) ─────────────
+// ─── v3.6.15 City Resort Data (used by devSwitchCity to update LOCS) ─────────────
 // TZ per city for Open-Meteo requests
 const CITY_TZ = {
   calgary:   'America/Edmonton',
@@ -4371,11 +4558,11 @@ function updateCityToggleBtn(cityKey) {
 
 function enterDevMode() {
   document.body.classList.add('dev-mode-active');
-  // (v3.6.14 public: no beta-banner)
+  // (v3.6.15 public: no beta-banner)
   // ver-badge → "V3"
   document.querySelectorAll('.ver-badge').forEach(b => {
     if (!b.dataset.origText) b.dataset.origText = b.textContent;
-    b.textContent = 'v3.6.14';
+    b.textContent = 'v3.6.15';
     b.onclick = null;
   });
   // Bell → screwdriver
@@ -4406,7 +4593,7 @@ function exitDevMode() {
   document.body.classList.remove('dev-mode-active');
   closeDevPanel();
   closeCityPicker();
-  // (v3.6.14 public: no beta-banner to restore)
+  // (v3.6.15 public: no beta-banner to restore)
   // Restore ver-badge
   document.querySelectorAll('.ver-badge').forEach(b => {
     if (b.dataset.origText) b.textContent = b.dataset.origText;
@@ -4613,7 +4800,7 @@ async function devRefreshData() {
     <div class="dev-section-title">⚙️ 系統資訊</div>
     <div class="dev-row">
       <span class="dev-row-label">版本</span>
-      <span class="dev-row-value" id="dev-version-display">v3.1 → v3.6.14</span>
+      <span class="dev-row-value" id="dev-version-display">v3.1 → v3.6.15</span>
     </div>
     <div class="dev-row">
       <span class="dev-row-label">VAPID Key (前8碼)</span>
@@ -4663,6 +4850,27 @@ async function devRefreshData() {
     <div class="tmr-modal-section">
       <div class="tmr-modal-section-title">📊 關鍵數據</div>
       <div class="tmr-modal-stats" id="tmr-modal-stats"></div>
+    <hr class="tmr-modal-divider">
+    <div class="tmr-modal-section">
+      <div class="tmr-modal-section-title">📈 過去 7 天天氣走勢</div>
+      <div class="tmr-chart-wrap" id="tmr-chart-wrap">
+        <div class="tmr-chart-loading" id="tmr-chart-loading">
+          <span style="animation:spin 1s linear infinite;display:inline-block">⏳</span> 載入歷史數據…
+        </div>
+        <div id="tmr-chart-svg" style="display:none"></div>
+        <div class="tmr-chart-legend" id="tmr-chart-legend" style="display:none">
+          <div class="tmr-chart-legend-item">
+            <div class="tmr-chart-legend-line" style="background:#ff9a6c"></div>最高氣溫
+          </div>
+          <div class="tmr-chart-legend-item">
+            <div class="tmr-chart-legend-line" style="background:#a0c4f8"></div>最低氣溫
+          </div>
+          <div class="tmr-chart-legend-item">
+            <div class="tmr-chart-legend-bar" style="background:rgba(120,180,255,0.55)"></div>降雪量
+          </div>
+        </div>
+      </div>
+    </div>
     </div>
   </div>
 </div>
