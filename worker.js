@@ -1,6 +1,6 @@
 // ══════════════════════════════════════════════════════════════════════
-//  Ski Dashboard — Cloudflare Worker v3.0
-//  Push Notification Backend  (VAPID rewrite, 2026-03)
+//  Ski Dashboard — Cloudflare Worker v4.0.9
+//  Push Notification Backend  (v4.0.9 unified)
 //
 //  Required KV binding:   SUBSCRIPTIONS  → namespace: SKI_SUBS
 //  Optional env var:      VAPID_SUBJECT  (default: mailto:admin@westech.com.hk)
