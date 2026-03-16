@@ -5110,6 +5110,28 @@ function syncUrlState(replace = true) {
   } catch(e) {}
 }
 
+function resolveSnowReportId(resort) {
+  if (!resort) return null;
+  const website = (resort.website || '').toLowerCase();
+  const name = (resort.name || '').toLowerCase();
+  if (website.includes('skilouise') || name.includes('lake louise')) return 'louise';
+  if (website.includes('skibanff') || name.includes('sunshine')) return 'sunshine';
+  if (website.includes('skinakiska') || name.includes('nakiska')) return 'nakiska';
+  if (website.includes('banffnorquay') || name.includes('norquay')) return 'norquay';
+  if (website.includes('skicastle') || name.includes('castle')) return 'castle';
+  if (website.includes('skifernie') || name.includes('fernie')) return 'fernie';
+  if (website.includes('kickinghorse') || name.includes('kicking horse')) return 'kickhorse';
+  if (website.includes('panorama') || name.includes('panorama')) return 'panorama';
+  if (website.includes('skimarmot') || name.includes('marmot')) return 'marmot';
+  if (website.includes('rabbithill') || name.includes('rabbit hill')) return 'rabbithill';
+  if (website.includes('sunridge') || name.includes('sunridge')) return 'sunridge';
+  if (website.includes('skisnowvalley') || name.includes('snow valley')) return website.includes('barrie') ? 'snowvalleyb' : 'snowvalleye';
+  if (website.includes('tremblant') || name.includes('tremblant')) return 'tremblant';
+  if (website.includes('bluemountain') || name.includes('blue mountain')) return 'blue';
+  if (website.includes('whistler') || name.includes('whistler')) return 'whistler';
+  return null;
+}
+
 function syncSnowReportCards() {
   if (typeof CITY_LOCS === 'undefined') return;
   const cityKey = (typeof activeCity !== 'undefined' && CITY_LOCS[activeCity]) ? activeCity : 'calgary';
@@ -5140,7 +5162,8 @@ function syncSnowReportCards() {
         const idx = parseInt((key || 'c0').replace('c',''), 10);
         const resort = resorts[idx];
         if (!resort) return;
-        const report = (payload.resorts || []).find(r => r.id === resort.id) || {
+        const reportId = resolveSnowReportId(resort);
+        const report = (payload.resorts || []).find(r => r.id === reportId) || {
           status: 'unavailable',
           fetchedAt: payload.fetchedAt,
           source: { name: '未提供', official: false },
@@ -6162,7 +6185,8 @@ async function openSnowModal(key) {
     payload = await r.json();
     window.LIVE_SNOW_CACHE = payload;
   }
-  const report = (payload.resorts || []).find(r => r.id === resort.id) || {
+  const reportId = resolveSnowReportId(resort);
+  const report = (payload.resorts || []).find(r => r.id === reportId) || {
     status: 'unavailable', source: { name: '未提供', official: false }, metrics: {}, notes: ['此雪場目前尚未接入 live snow adapter。']
   };
 
