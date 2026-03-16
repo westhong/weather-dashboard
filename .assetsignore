@@ -1,7 +1,13 @@
 .git
 .git/**
+.github
+.github/**
 .wrangler
 .wrangler/**
 node_modules
 node_modules/**
+README.md
+worker.js
+_worker.js
+wrangler.toml
 *.log
