@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════════════════════════════════
-//  Ski Dashboard — v4.1.0 (_worker.js)
+//  Ski Dashboard — v4.2.0 (_worker.js)
 //  Cloudflare Worker — All-in-One Architecture
 //
 //  Architecture (inspired by UmiCare):
@@ -25,7 +25,7 @@ const VAPID_KEY_Y = 'mihJi_QapcWSgsKHSarYl3UIy4ElB6t9fDxmqEJM83w';
 // Private key 'd' value — set as Cloudflare secret: VAPID_PRIVATE_KEY
 // Fallback for dev/testing only (remove in production)
 
-// ─── City → Resort Config (v4.1.0) ─────────────────────────────────────────────
+// ─── City → Resort Config (v4.2.0) ─────────────────────────────────────────────
 // 5 cities, 8 resorts each, sorted by fame/priority, all within 500 km radius
 const CITY_RESORTS = {
   calgary: {
@@ -207,7 +207,7 @@ async function handleApi(request, env, url) {
   if (path === '/test-push' && method === 'GET') {
     const results = await sendToAll(env, KV, {
       title: '❄️ Ski Dashboard 測試',
-      body: '推送系統正常運作！ v4.1.0 ✅',
+      body: '推送系統正常運作！ v4.2.0 ✅',
       icon: '/icon-192.png',
       tag: 'ski-test',
       url: '/',
@@ -221,37 +221,33 @@ async function handleApi(request, env, url) {
     return json({ ok: true, result });
   }
 
-  // GET /api/snow?city=calgary — return snow data for a city's resorts (v4.1.0)
+  // GET /api/snow?city=calgary — live snow reports with normalized model (v4.2.0)
   if (path === '/snow' && method === 'GET') {
     const cityKey = url.searchParams.get('city') || DEFAULT_CITY;
     const cityData = CITY_RESORTS[cityKey];
     if (!cityData) return json({ error: `Unknown city: ${cityKey}`, known: Object.keys(CITY_RESORTS) }, 400);
-    // Try KV cache first (30 min TTL)
-    const cacheKey = `snow:${cityKey}`;
+
+    const cacheKey = `snow:${cityKey}:v1`;
     const cached = await KV.get(cacheKey);
     if (cached) {
       return new Response(cached, { status: 200, headers: { 'Content-Type': 'application/json', ...CORS } });
     }
-    // Fetch fresh
-    const resortResults = [];
+
+    const fetchedAt = new Date().toISOString();
+    const resorts = [];
     for (const resort of cityData.resorts) {
-      try {
-        const wd = await fetchWeather(resort);
-        resortResults.push({
-          id: resort.id,
-          name: resort.name,
-          emoji: resort.emoji,
-          dist: resort.dist,
-          temp: wd ? wd.temp : null,
-          wind: wd ? wd.wind : null,
-          snowfall_cm: wd ? wd.snowfall_cm : null,
-        });
-      } catch(e) {
-        resortResults.push({ id: resort.id, name: resort.name, emoji: resort.emoji, dist: resort.dist, error: e.message });
-      }
+      resorts.push(await getNormalizedSnowReport(resort, fetchedAt));
     }
-    const payload = JSON.stringify({ city: cityKey, name: cityData.name, nameZh: cityData.nameZh, resorts: resortResults, fetched: new Date().toISOString() }, null, 2);
-    // Cache for 30 min
+
+    const payload = JSON.stringify({
+      city: cityKey,
+      name: cityData.name,
+      nameZh: cityData.nameZh,
+      fetchedAt,
+      cacheTtlSeconds: 1800,
+      resorts,
+    }, null, 2);
+
     await KV.put(cacheKey, payload, { expirationTtl: 1800 });
     return new Response(payload, { status: 200, headers: { 'Content-Type': 'application/json', ...CORS } });
   }
@@ -261,7 +257,7 @@ async function handleApi(request, env, url) {
     const keys = await KV.list({ prefix: 'push:' });
     const lastCheck = await KV.get('meta:lastCheck');
     return json({
-      version: 'v4.1.0',
+      version: 'v4.2.0',
       subscribers: keys.keys.length,
       lastCheck,
       resorts: RESORTS.map(r => r.name),
@@ -278,11 +274,244 @@ async function handleApi(request, env, url) {
       const s = JSON.parse(raw);
       return { key: k.name, endpoint: s.endpoint ? s.endpoint.substring(0, 60) + '...' : 'MISSING' };
     }));
-    return json({ version: 'v4.1.0', count: subs.length, subs: subs.filter(Boolean) });
+    return json({ version: 'v4.2.0', count: subs.length, subs: subs.filter(Boolean) });
   }
 
-  return json({ version: 'v4.1.0', error: 'Not found' }, 404);
+  return json({ version: 'v4.2.0', error: 'Not found' }, 404);
 }
+
+
+function isoOrNull(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+function numberOrNull(value) {
+  if (value === null || value === undefined || value === '') return null;
+  const cleaned = String(value).replace(/,/g, '').match(/-?\d+(?:\.\d+)?/);
+  return cleaned ? Number(cleaned[0]) : null;
+}
+
+function cleanHtmlText(value) {
+  if (!value) return null;
+  return String(value)
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&rsquo;/g, '’')
+    .replace(/&lsquo;/g, '‘')
+    .replace(/&ldquo;/g, '“')
+    .replace(/&rdquo;/g, '”')
+    .replace(/&ndash;/g, '–')
+    .replace(/&mdash;/g, '—')
+    .replace(/&deg;/g, '°')
+    .replace(/&comma;/g, ',')
+    .replace(/&NewLine;/g, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim() || null;
+}
+
+function buildBaseSnowReport(resort, fetchedAt, source) {
+  return {
+    id: resort.id,
+    name: resort.name,
+    emoji: resort.emoji,
+    dist: resort.dist,
+    status: 'unavailable',
+    source,
+    updatedAt: null,
+    fetchedAt,
+    metrics: {
+      overnightCm: null,
+      last24hCm: null,
+      last48hCm: null,
+      last7dCm: null,
+      baseCm: null,
+      seasonCm: null,
+      liftsOpen: null,
+      liftsTotal: null,
+      runsOpen: null,
+      runsTotal: null,
+      groomedRuns: null,
+    },
+    rawSummary: null,
+    notes: [],
+  };
+}
+
+async function fetchText(url, init = {}) {
+  const response = await fetch(url, {
+    ...init,
+    headers: {
+      'User-Agent': 'ski-dashboard-ca/4.2.0 (+https://dashboard.westech.com.hk)',
+      'Accept': init.accept || 'text/html,application/json;q=0.9,*/*;q=0.8',
+      ...(init.headers || {}),
+    },
+  });
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+  return response.text();
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'ski-dashboard-ca/4.2.0 (+https://dashboard.westech.com.hk)',
+      'Accept': 'application/json,text/plain;q=0.9,*/*;q=0.8',
+    },
+  });
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+  return response.json();
+}
+
+function toCount(open, total) {
+  const a = numberOrNull(open);
+  const b = numberOrNull(total);
+  return [a, b];
+}
+
+async function getNormalizedSnowReport(resort, fetchedAt) {
+  const adapter = SNOW_REPORT_ADAPTERS[resort.id] || getUnavailableSnowReport;
+  try {
+    return await adapter(resort, fetchedAt);
+  } catch (error) {
+    const base = buildBaseSnowReport(resort, fetchedAt, {
+      name: 'Adapter Error',
+      type: 'internal',
+      url: null,
+      official: false,
+    });
+    base.status = 'error';
+    base.notes.push(`Snow adapter failed: ${error.message}`);
+    return base;
+  }
+}
+
+async function getUnavailableSnowReport(resort, fetchedAt) {
+  const report = buildBaseSnowReport(resort, fetchedAt, {
+    name: 'No live official adapter',
+    type: 'none',
+    url: null,
+    official: false,
+  });
+  report.notes.push('Phase 1 live snow adapter is not available for this resort yet.');
+  return report;
+}
+
+async function getSunshineSnowReport(resort, fetchedAt) {
+  const source = { name: 'Sunshine Village official API', type: 'json', url: 'https://www.skibanff.com/wp-json/sunshine/v1/snow-reports', official: true };
+  const report = buildBaseSnowReport(resort, fetchedAt, source);
+  const [snow, lifts] = await Promise.all([
+    fetchJson('https://www.skibanff.com/wp-json/sunshine/v1/snow-reports'),
+    fetchJson('https://www.skibanff.com/wp-json/sunshine/v1/lifts'),
+  ]);
+  report.status = 'live';
+  report.updatedAt = isoOrNull(snow.timestamp?.replace(' ', 'T') + '-06:00') || isoOrNull(snow.updatedText);
+  report.metrics.overnightCm = numberOrNull(snow.overnight?.metric);
+  report.metrics.last24hCm = numberOrNull(snow.past24Hours?.metric);
+  report.metrics.last48hCm = null;
+  report.metrics.last7dCm = numberOrNull(snow.historical?.metric || snow.paris_xdays?.metric);
+  report.metrics.baseCm = numberOrNull(snow.settledBase?.metric || snow.paris_base?.metric);
+  report.metrics.seasonCm = numberOrNull(snow.seasonTotal?.metric || snow.paris_snowfall?.metric);
+  report.metrics.liftsOpen = numberOrNull(lifts?.lifts?.open);
+  report.metrics.liftsTotal = numberOrNull(lifts?.lifts?.max);
+  report.metrics.runsOpen = numberOrNull(lifts?.runs?.open);
+  report.metrics.runsTotal = numberOrNull(lifts?.runs?.max);
+  report.metrics.groomedRuns = null;
+  report.rawSummary = cleanHtmlText(snow.summary);
+  report.notes.push('Official JSON endpoint used for snow totals and lift/run status.');
+  return report;
+}
+
+async function getLakeLouiseSnowReport(resort, fetchedAt) {
+  const source = { name: 'Lake Louise official conditions page', type: 'html', url: 'https://www.skilouise.com/snow-conditions/', official: true };
+  const report = buildBaseSnowReport(resort, fetchedAt, source);
+  const html = await fetchText(source.url);
+  const metaDate = html.match(/article:modified_time" content="([^"]+)"/i);
+  report.updatedAt = isoOrNull(metaDate && metaDate[1]);
+
+  const sectionMatch = html.match(/obj-condition-body[\s\S]{0,2000}?<h4 class="obj-title[^>]*>([\s\S]*?)<\/p>/i);
+  if (sectionMatch) report.rawSummary = cleanHtmlText(sectionMatch[1]);
+
+  const pairs = [...html.matchAll(/<div class="obj-condition-item[\s\S]*?<strong[^>]*>([^<]+)<\/strong><small[^>]*>(cm|m|in)<\/small>[\s\S]*?<span class="obj-text d-block">\s*([^<]+?)\s*<\/span>/gi)]
+    .map((m) => ({ value: numberOrNull(m[1]), label: cleanHtmlText(m[3]) }));
+  for (const pair of pairs) {
+    const label = (pair.label || '').toLowerCase();
+    if (label.includes('overnight')) report.metrics.overnightCm = pair.value;
+    else if (label.includes('24')) report.metrics.last24hCm = pair.value;
+    else if (label.includes('48')) report.metrics.last48hCm = pair.value;
+    else if (label.includes('7 day')) report.metrics.last7dCm = pair.value;
+    else if (label.includes('snow base')) report.metrics.baseCm = pair.value;
+    else if (label.includes('season')) report.metrics.seasonCm = pair.value;
+  }
+
+  const textSummary = cleanHtmlText(html);
+  const liftsMatch = textSummary && textSummary.match(/All\s+(\d+)\s+lifts\s+are\s+spinning/i);
+  const runsMatch = textSummary && textSummary.match(/(\d+)\s+open\s+runs/i);
+  if (liftsMatch) {
+    report.metrics.liftsOpen = Number(liftsMatch[1]);
+    report.metrics.liftsTotal = Number(liftsMatch[1]);
+  }
+  if (runsMatch) report.metrics.runsOpen = Number(runsMatch[1]);
+  report.status = (report.metrics.overnightCm !== null || report.metrics.last24hCm !== null || report.metrics.baseCm !== null) ? 'live' : 'unavailable';
+  if (report.status !== 'live') report.notes.push('Official Lake Louise page loaded, but expected condition metrics were not detected.');
+  else report.notes.push('Parsed from official Lake Louise conditions page HTML.');
+  return report;
+}
+
+async function getNorquaySnowReport(resort, fetchedAt) {
+  const source = { name: 'Mt Norquay official conditions page', type: 'html', url: 'https://banffnorquay.com/winter/conditions/', official: true };
+  const report = buildBaseSnowReport(resort, fetchedAt, source);
+  const html = await fetchText(source.url);
+  const updatedMatch = html.match(/Conditions update for ([^.]+\.)/i);
+  report.updatedAt = isoOrNull(updatedMatch ? updatedMatch[1].replace(/\.$/, '') : null);
+  const summaryMatch = html.match(/<h3><b>Daily Update<\/b><\/h3>[\s\S]*?<p[^>]*><b>Conditions update for[\s\S]*?<\/p>([\s\S]*?)<\/div>/i);
+  if (summaryMatch) report.rawSummary = cleanHtmlText(summaryMatch[1]);
+
+  const snowValues = [...html.matchAll(/<p class="snow-height">([^<]+)<\/p>\s*<p class="snow-details">([^<]+)<\/p>/gi)].map((m) => ({ value: numberOrNull(m[1]), label: cleanHtmlText(m[2]) }));
+  for (const pair of snowValues) {
+    const label = (pair.label || '').toLowerCase();
+    if (label.includes('overnight')) report.metrics.overnightCm = pair.value;
+    else if (label.includes('24')) report.metrics.last24hCm = pair.value;
+    else if (label.includes('7')) report.metrics.last7dCm = pair.value;
+    else if (label.includes('lower mountain')) report.metrics.baseCm = pair.value;
+    else if (label.includes('year to date')) report.metrics.seasonCm = pair.value;
+  }
+  const text = cleanHtmlText(html) || '';
+  if (/all lifts are running/i.test(text)) {
+    report.metrics.liftsOpen = 6;
+    report.metrics.liftsTotal = 6;
+    report.notes.push('Lift count inferred from current Mt Norquay winter lift network when official copy says all lifts are running.');
+  }
+  if (/groomed runs are in excellent shape/i.test(text)) {
+    report.notes.push('Official update indicates groomed runs are in excellent shape, but no groomed-run count is published on page.');
+  }
+  report.status = (report.metrics.overnightCm !== null || report.metrics.baseCm !== null) ? 'live' : 'unavailable';
+  if (report.status !== 'live') report.notes.push('Official Mt Norquay page loaded, but expected snow metrics were not detected.');
+  return report;
+}
+
+async function getCastleSnowReport(resort, fetchedAt) {
+  const source = { name: 'Castle Mountain official conditions page', type: 'html', url: 'https://www.skicastle.ca/snow-report-conditions-new/', official: true };
+  const report = buildBaseSnowReport(resort, fetchedAt, source);
+  const html = await fetchText(source.url);
+  const text = cleanHtmlText(html) || '';
+  const updated = text.match(/Last updated:\s*([^|]+?)\s+MT/i);
+  report.updatedAt = isoOrNull(updated && updated[1] && !updated[1].includes('-') ? updated[1] : null);
+  report.rawSummary = 'Official Castle Mountain conditions page is reachable, but current snow/lift details are withheld behind a password-protected block and exposed values are blank.';
+  report.notes.push('Official source exists, but published values are blank / password-gated at fetch time. Returning unavailable rather than inventing data.');
+  return report;
+}
+
+const SNOW_REPORT_ADAPTERS = {
+  louise: getLakeLouiseSnowReport,
+  sunshine: getSunshineSnowReport,
+  norquay: getNorquaySnowReport,
+  castle: getCastleSnowReport,
+};
 
 // ══════════════════════════════════════════════════════════════════════
 //  SNOW CHECK & NOTIFY
