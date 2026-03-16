@@ -1,6 +1,7 @@
-_worker.js
-wrangler.toml
-worker.js
-README.md
+.git
+.git/**
+.wrangler
+.wrangler/**
 node_modules
-.github
+node_modules/**
+*.log
