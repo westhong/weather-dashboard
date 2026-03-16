@@ -2,11 +2,11 @@
 // Architecture: All-in-One Cloudflare Worker
 // Push endpoints are now same-origin (/api/subscribe, /api/unsubscribe)
 
-const CACHE_NAME = 'ski-dashboard-v3.6';
+const CACHE_NAME = 'ski-dashboard-v3.7';
 
 // ─── Install ────────────────────────────────────────────────────────────────
 self.addEventListener('install', event => {
-  console.log('[SW] Install v3.6');
+  console.log('[SW] Install v3.7');
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(['/']);
@@ -16,7 +16,7 @@ self.addEventListener('install', event => {
 
 // ─── Activate: clean old caches ────────────────────────────────────────────
 self.addEventListener('activate', event => {
-  console.log('[SW] Activate v3.6');
+  console.log('[SW] Activate v3.7');
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
@@ -65,16 +65,7 @@ self.addEventListener('push', event => {
     }
   }
 
-  const resortPageMap = {
-    'Nakiska': '/?page=0',
-    'Sunshine': '/?page=1',
-    'Sunshine Village': '/?page=1',
-    'Lake Louise': '/?page=2',
-    'Norquay': '/?page=3',
-    'Calgary': '/?page=4'
-  };
-
-  const targetUrl = resortPageMap[data.resort] || data.url || '/';
+    const targetUrl = data.url || '/';
 
   const options = {
     body: data.body,
@@ -108,13 +99,15 @@ self.addEventListener('notificationclick', event => {
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
       for (const client of clientList) {
-        if (client.url.includes('dashboard.westech.com.hk') && 'focus' in client) {
-          client.navigate(targetUrl);
+        const currentUrl = new URL(client.url);
+        const desiredUrl = new URL(targetUrl, currentUrl.origin).toString();
+        if (currentUrl.origin === self.location.origin && 'focus' in client) {
+          if (client.url !== desiredUrl && 'navigate' in client) client.navigate(desiredUrl);
           return client.focus();
         }
       }
       if (clients.openWindow) {
-        return clients.openWindow('https://dashboard.westech.com.hk' + targetUrl);
+        return clients.openWindow(new URL(targetUrl, self.location.origin).toString());
       }
     })
   );

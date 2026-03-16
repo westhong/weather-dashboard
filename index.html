@@ -182,6 +182,14 @@ html, body {
 }
 .dot.on { background: #fff; width: 22px; }
 
+.snow-preview-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:10px; font-weight:700; letter-spacing:.2px;
+  color:#ffd479; background:rgba(255,212,121,.12);
+  border:1px solid rgba(255,212,121,.28);
+  border-radius:999px; padding:4px 8px;
+}
+
 /* ═══════════════════════════════════════════
    PAGE HEADER
 ═══════════════════════════════════════════ */
@@ -5071,10 +5079,78 @@ function loadAll(){ return Promise.all(LOCS.map(l=>loadLoc(l))); }
 let cur=0;
 const stage=document.getElementById('stage');
 const dotsEls=[...document.querySelectorAll('.dot')];
-function go(n){
+function go(n, { updateUrl = true } = {}){
   cur=Math.max(0,Math.min(8,n));
   stage.style.transform=`translateX(-${cur*100}vw)`;
   dotsEls.forEach((d,i)=>d.classList.toggle('on',i===cur));
+  if (updateUrl) syncUrlState();
+}
+
+function getUrlState() {
+  const url = new URL(window.location.href);
+  const pageParam = parseInt(url.searchParams.get('page') || '', 10);
+  const cityParam = (url.searchParams.get('city') || '').toLowerCase();
+  const hashMatch = /^#(?:page-?)?(\d+)$/.exec(window.location.hash || '');
+  const page = Number.isInteger(pageParam) ? pageParam : (hashMatch ? parseInt(hashMatch[1], 10) : 0);
+  return {
+    page: Math.max(0, Math.min(8, Number.isFinite(page) ? page : 0)),
+    city: cityParam
+  };
+}
+
+function syncUrlState(replace = true) {
+  try {
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', String(cur));
+    if (typeof activeCity !== 'undefined' && activeCity) url.searchParams.set('city', activeCity);
+    url.hash = `page-${cur}`;
+    const next = url.pathname + url.search + url.hash;
+    if (replace) history.replaceState({ page: cur, city: activeCity }, '', next);
+    else history.pushState({ page: cur, city: activeCity }, '', next);
+  } catch(e) {}
+}
+
+function syncSnowReportCards() {
+  if (typeof CITY_LOCS === 'undefined') return;
+  const cityKey = (typeof activeCity !== 'undefined' && CITY_LOCS[activeCity]) ? activeCity : 'calgary';
+  const resorts = CITY_LOCS[cityKey] || [];
+  document.querySelectorAll('[data-snow-key]').forEach(card => {
+    const key = card.getAttribute('data-snow-key');
+    const idx = parseInt((key || 'c0').replace('c',''), 10);
+    const resort = resorts[idx];
+    if (!resort) return;
+
+    const label = card.querySelector('.card-label');
+    if (label) label.textContent = '🏔 雪況預覽';
+
+    const badge = card.querySelector('[id$="-resort-badge"]');
+    if (badge) {
+      badge.textContent = resort.website || '官方網站';
+      badge.style.background = 'rgba(67,201,140,.15)';
+      badge.style.color = '#43c98c';
+    }
+
+    const dateEl = badge && badge.parentElement ? badge.parentElement.querySelector('span:last-child') : null;
+    if (dateEl) {
+      dateEl.textContent = '非即時 · 僅供參考';
+      dateEl.classList.add('snow-preview-badge');
+      dateEl.style.fontSize = '';
+      dateEl.style.color = '';
+    }
+
+    const stats = card.querySelectorAll('.sstat');
+    if (stats[0]) stats[0].querySelector('.sstat-lbl').innerHTML = `山頂海拔<br>${resort.alt.toLocaleString()} m`;
+    if (stats[1]) stats[1].querySelector('.sstat-val').innerHTML = '—<span style="font-size:13px;font-weight:400;">cm</span>';
+    if (stats[1]) stats[1].querySelector('.sstat-lbl').innerHTML = '山腳積雪<br>官方查看';
+    if (stats[2]) stats[2].querySelector('.sstat-val').innerHTML = '預覽<span style="font-size:13px;font-weight:400;"></span>';
+    if (stats[2]) stats[2].querySelector('.sstat-lbl').innerHTML = '非即時<br>新雪資料';
+    if (stats[3]) stats[3].querySelector('.sstat-val').innerHTML = '官方<span style="font-size:13px;font-weight:400;"></span>';
+    if (stats[3]) stats[3].querySelector('.sstat-lbl').innerHTML = '詳細雪況<br>請看官網';
+
+    card.title = `查看 ${resort.name} 官方雪況`;
+    card.dataset.resortName = resort.name;
+    card.dataset.resortWebsite = `https://www.${resort.website}`;
+  });
 }
 
 let sx=0,sy=0,dragging=false;
@@ -5195,12 +5271,31 @@ document.addEventListener('keydown',e=>{
 
 let _lastLoadTime = 0; // throttle background reloads to once per 60s
 document.addEventListener('DOMContentLoaded',()=>{
-  // Initialise city toggle button with saved/default city immediately on load
+  const state = getUrlState();
+  if (state.city && CITY_CONFIG[state.city]) {
+    activeCity = state.city;
+    localStorage.setItem('v3_city', state.city);
+  }
   updateCityToggleBtn(activeCity);
-  _lastLoadTime = Date.now(); loadAll();
+  syncSnowReportCards();
+  _lastLoadTime = Date.now();
+  if (activeCity !== 'calgary') {
+    devSwitchCity(activeCity).then(() => go(state.page, { updateUrl:false }));
+  } else {
+    loadAll();
+    go(state.page, { updateUrl:false });
+  }
+  syncUrlState();
   setInterval(() => { _lastLoadTime = Date.now(); loadAll(); }, 15*60*1000); // auto-refresh every 15 min
-  // First-visit: auto-detect nearest city and show confirmation toast
   maybeAutoDetectOnFirstVisit();
+});
+
+window.addEventListener('popstate', ()=>{
+  const state = getUrlState();
+  if (state.city && typeof activeCity !== 'undefined' && state.city !== activeCity && CITY_CONFIG[state.city]) {
+    devSwitchCity(state.city);
+  }
+  go(state.page, { updateUrl:false });
 });
 
 // Reload data when tab becomes visible again (mobile background → foreground)
@@ -5669,6 +5764,8 @@ async function devSwitchCity(cityKey) {
   // ── Reload weather for the 4 resort pages
   try {
     await Promise.all(LOCS.slice(0,9).map(l => loadLoc(l)));
+    syncSnowReportCards();
+    syncUrlState();
     if (resultEl) {
       resultEl.textContent = '✅ 已切換到 ' + CITY_CONFIG[cityKey].nameZh;
     }
@@ -5981,165 +6078,15 @@ async function devRefreshData() {
 
 /* ─── SNOW REPORT MODAL ──────────────────────────────────────── */
 function openSnowModal(key) {
-  // Check if current city matches snow report data
   const idx = parseInt(key.replace('c',''));
   const curCity = typeof activeCity !== 'undefined' ? activeCity : 'calgary';
   const cityLocs = (typeof CITY_LOCS !== 'undefined' && CITY_LOCS[curCity]) ? CITY_LOCS[curCity] : null;
   const curResort = cityLocs ? cityLocs[idx] : null;
-
-  let d = SNOW_REPORTS[key];
-  if (!d) return;
-
-  // If current city isn't Calgary, show placeholder with correct resort info
-  if (curResort && d && d.name !== curResort.name) {
-    d = {
-      name: curResort.name,
-      website: 'https://www.' + curResort.website,
-      websiteLabel: curResort.website,
-      accent: '#a0c4f8',
-      date: '即時天氣資料',
-      topSnow: null, topElev: curResort.alt,
-      baseSnow: null, baseElev: null,
-      overnight: '—', seasonTotal: '—',
-      snowQuality: '—',
-      season: '—',
-      runsOpen: null, runsTotal: null,
-      lifts: [],
-      runs: {green:{pct:0,count:0}, blue:{pct:0,count:0}, black:{pct:0,count:0}, dblBlack:{pct:0,count:0}},
-      terrainTypes: [],
-      famousRuns: [],
-      hiddenGem: '此城市的詳細雪況資料即將推出。',
-      notes: '天氣由 Open-Meteo 提供。詳細雪況請訪問官方網站。\n⚠️ 詳細雪況資料目前僅支援卡加利城市雪場。'
-    };
-  }
-
-  const overlay = document.getElementById('snow-modal-overlay');
-
-  // difficulty config
-  const DIFF = {
-    green:    {icon:'&#x1F7E2;', label:'Green',   cls:'filled-green',    dotCount:2, color:'#43c98c'},
-    blue:     {icon:'&#x1F537;', label:'Blue',    cls:'filled-blue',     dotCount:3, color:'#3b82f6'},
-    black:    {icon:'&#9670;',   label:'Black',   cls:'filled-black',    dotCount:4, color:'#9ca3af'},
-    dblBlack: {icon:'&#9670;&#9670;', label:'D.Black', cls:'filled-dblBlack', dotCount:5, color:'#6b7280'},
-  };
-  const TOTAL_DOTS = 5;
-
-  function makeDots(filled, cls) {
-    return Array.from({length: TOTAL_DOTS}, (_, i) =>
-      '<div class="diff-dot ' + (i < filled ? cls : 'empty') + '"></div>'
-    ).join('');
-  }
-
-  const TERRAIN_LABELS = {
-    groomed:'&#x1F3BF; Groomed', trees:'&#x1F332; Trees/Glades', bowls:'&#x1F3D4; Bowls',
-    moguls:'&#x26F0;&#xFE0F; Moguls', park:'&#x1F938; Park', glacier:'&#x1F9CA; Glacier', powder:'&#x1F4A8; Powder',
-  };
-
-  // difficulty rows
-  const diffRowsHTML = Object.entries(d.runs).map(function(entry) {
-    const rKey = entry[0], val = entry[1];
-    const cfg = DIFF[rKey];
-    if (!cfg) return '';
-    return '<div class="diff-row">' +
-      '<span class="diff-icon">' + cfg.icon + '</span>' +
-      '<span class="diff-label">' + cfg.label + '</span>' +
-      '<span class="diff-dots">' + makeDots(cfg.dotCount, cfg.cls) + '</span>' +
-      '<div class="diff-bar-wrap"><div class="diff-bar-fill" style="width:' + val.pct + '%;background:' + cfg.color + '"></div></div>' +
-      '<span class="diff-pct">' + val.pct + '%</span>' +
-      '<span class="diff-count">(' + val.count + ')</span>' +
-      '</div>';
-  }).join('');
-
-  // terrain chips
-  const terrainChipsHTML = (d.terrainTypes || []).map(function(t) {
-    return '<span class="terrain-chip">' + (TERRAIN_LABELS[t] || t) + '</span>';
-  }).join('');
-
-  // famous runs
-  const famousRunsHTML = (d.famousRuns || []).map(function(r) {
-    const cfg = DIFF[r.diff] || {};
-    const terrainLabel = TERRAIN_LABELS[r.terrain] || r.terrain;
-    return '<div class="famous-run-card diff-' + r.diff + '">' +
-      '<div class="famous-run-header">' +
-        '<span class="famous-run-name">' + (cfg.icon || '') + ' ' + r.name + '</span>' +
-        '<span class="famous-run-badge">' + terrainLabel + '</span>' +
-      '</div>' +
-      '<div class="famous-run-desc">' + r.desc + '</div>' +
-      '</div>';
-  }).join('');
-
-  // lift list
-  const liftsHTML = d.lifts.map(function(l) {
-    const icon = l.status === 'open' ? '&#x1F7E2;' : l.status === 'weekend' ? '&#x1F7E1;' : '&#x1F534;';
-    return '<div class="snow-lift-row">' +
-      '<span class="snow-lift-name">' + icon + ' ' + l.name + '</span>' +
-      '<span class="snow-lift-badge snow-lift-' + l.status + '">' + l.hours + '</span>' +
-      '</div>';
-  }).join('');
-
-  // overnight color
-  const ovnVal   = parseInt(d.overnight.replace(/[+\-]/g,''));
-  const ovnColor = d.overnight.startsWith('+') && ovnVal > 0 ? '#43c98c' : '#8899aa';
-
-  document.getElementById('snow-modal-content').innerHTML =
-    '<div class="snow-modal-header">' +
-      '<div class="snow-modal-resort" style="color:' + d.accent + '">&#x1F3D4; ' + d.name + '</div>' +
-      '<div class="snow-modal-meta">' +
-        '<span>&#x1F4C5; ' + d.date + '</span>' +
-        '<span>&#x2744;&#xFE0F; ' + d.snowQuality + '</span>' +
-        '<a href="' + d.website + '" target="_blank" rel="noopener">&#x2197; ' + d.websiteLabel + '</a>' +
-      '</div>' +
-    '</div>' +
-
-    '<div class="snow-modal-sec-title">&#x1F4CA; &#x7A4D;&#x96EA;&#x6DF1;&#x5EA6;</div>' +
-    '<div class="snow-modal-stats-grid">' +
-      '<div class="snow-modal-stat">' +
-        '<div class="snow-modal-stat-lbl">&#x1F3D4; &#x5C71;&#x9802;&#x7A4D;&#x96EA; (' + d.topElev + 'm)</div>' +
-        '<div class="snow-modal-stat-val" style="color:#a0c4f8">' + (d.topSnow !== null ? d.topSnow + '<span style="font-size:13px;font-weight:400">cm</span>' : '—') + '</div>' +
-      '</div>' +
-      '<div class="snow-modal-stat">' +
-        '<div class="snow-modal-stat-lbl">&#x1F3E0; &#x5C81;&#x5165;&#x7A4D;&#x96EA; (' + (d.baseElev !== null ? d.baseElev + 'm' : '—') + ')</div>' +
-        '<div class="snow-modal-stat-val" style="color:#a0c4f8">' + (d.baseSnow !== null ? d.baseSnow + '<span style="font-size:13px;font-weight:400">cm</span>' : '—') + '</div>' +
-      '</div>' +
-      '<div class="snow-modal-stat">' +
-        '<div class="snow-modal-stat-lbl">&#x1F328; &#x6628;&#x665A;&#x65B0;&#x96EA;</div>' +
-        '<div class="snow-modal-stat-val" style="color:' + ovnColor + '">' + d.overnight + '<span style="font-size:13px;font-weight:400">cm</span></div>' +
-      '</div>' +
-      '<div class="snow-modal-stat">' +
-        '<div class="snow-modal-stat-lbl">&#x1F4C8; &#x5B63;&#x7BC0;&#x7D2F;&#x7A4D;</div>' +
-        '<div class="snow-modal-stat-val" style="color:#ffc84a;font-size:15px">' + d.seasonTotal + '</div>' +
-      '</div>' +
-    '</div>' +
-
-    '<hr class="snow-modal-divider">' +
-    '<div class="snow-modal-sec-title">&#x26F7;&#xFE0F; &#x96E3;&#x5EA6;&#x5206;&#x4F48;</div>' +
-    '<div class="diff-section">' +
-      '<div class="diff-rows">' + diffRowsHTML + '</div>' +
-      '<div class="terrain-chips">' + terrainChipsHTML + '</div>' +
-    '</div>' +
-
-    (d.famousRuns && d.famousRuns.length > 0 ? '<hr class="snow-modal-divider"><div class="snow-modal-sec-title">&#x1F31F; &#x8457;&#x540D;&#x96EA;&#x9053;</div><div class="famous-runs">' + famousRunsHTML + '</div>' : '') +
-
-    '<hr class="snow-modal-divider">' +
-    '<div class="snow-modal-sec-title">&#x1F48E; Hidden Gem</div>' +
-    '<div class="hidden-gem-box">' +
-      '<div class="hidden-gem-title">&#x1F50D; &#x672C;&#x5730;&#x4EBA;&#x624D;&#x77E5;&#x9053;&#x7684;&#x79D8;&#x5BC6;</div>' +
-      '<div class="hidden-gem-text">' + d.hiddenGem + '</div>' +
-    '</div>' +
-
-    (d.lifts && d.lifts.length > 0 ? '<hr class="snow-modal-divider"><div style="display:flex;justify-content:space-between;align-items:center;"><div class="snow-modal-sec-title" style="margin:0">&#x1F6A1; &#x7E9C;&#x6988;&#x72C0;&#x614B; (' + d.lifts.filter(function(l){return l.status==="open";}).length + '/' + d.lifts.length + ' &#x958B;&#x653E;)</div><span style="font-size:11px;color:' + d.accent + ';font-weight:700">' + (d.runsOpen !== null ? d.runsOpen : '—') + '/' + (d.runsTotal !== null ? d.runsTotal : '—') + ' &#x8DEF;&#x7DDA;</span></div><div class="snow-lift-list" style="margin-top:8px">' + liftsHTML + '</div>' : '') +
-
-    '<hr class="snow-modal-divider">' +
-    '<div class="snow-modal-sec-title">&#x1F4DD; &#x96EA;&#x5834;&#x7C21;&#x4ECB;</div>' +
-    '<div class="snow-modal-notes">' + d.notes + '</div>' +
-    '<div style="font-size:10.5px;color:var(--muted);margin-top:8px;">&#x8CFD;&#x5B63;&#xFF1A;' + d.season + '</div>' +
-
-    '<a class="snow-modal-website" href="' + d.website + '" target="_blank" rel="noopener">' +
-      '&#x1F310; &#x524D;&#x5F80;&#x5B98;&#x65B9;&#x7DB2;&#x7AD9; ' + d.websiteLabel + ' &#x2192;' +
-    '</a>';
-
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  const fallback = SNOW_REPORTS[key] || {};
+  const resortName = (curResort && curResort.name) || fallback.name || 'Resort';
+  const website = (curResort && curResort.website) ? `https://www.${curResort.website}` : (fallback.website || '/');
+  showPushToast(`ℹ️ ${resortName} 詳細雪況目前未接入即時官方資料，將為你開啟官方雪況頁。`, 3600);
+  setTimeout(() => { window.open(website, '_blank', 'noopener'); }, 250);
 }
 
 function closeSnowModal() {
